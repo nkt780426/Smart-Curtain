@@ -164,7 +164,7 @@ def handle_esp32_status_messages(message):
 #########################################################################################################
 # jwt
 
-from flask_jwt_extended import JWTManager, get_jwt_identity, jwt_required, create_access_token, create_refresh_token, set_access_cookies, set_refresh_cookies, unset_jwt_cookies
+from flask_jwt_extended import JWTManager, get_jwt_identity, jwt_required, create_access_token, set_access_cookies, unset_jwt_cookies
 from config.jwt_config import JwtConfig
 
 app.config.from_object(JwtConfig)
@@ -219,12 +219,11 @@ class LoginResource(Resource):
 
             # Tạo access token và refresh token
             access_token = create_access_token(identity=username)
-            refresh_token = create_refresh_token(identity=username)
+            print(f"Access token: {access_token}")
 
             # Thiết lập cookies cho access token và refresh token trực tiếp trên response
             response = make_response(jsonify({"status": True}), 200)
             set_access_cookies(response, access_token)
-            set_refresh_cookies(response, refresh_token)
 
             logger_api.info(f'Username: {username} -- logged in successfully!')
             return response
@@ -250,7 +249,7 @@ class LogoutResource(Resource):
             jti = current_user.get('jti')  # Sử dụng get để tránh lỗi nếu 'jti' không tồn tại
             if jti:
                 blacklist.add(jti)  # Thêm token vào danh sách đen khi đăng xuất
-
+    
             # Xóa cookie liên quan đến jwt
             unset_jwt_cookies(response)
             response = jsonify({'status': True}, 200)
@@ -293,7 +292,7 @@ class RegisterResource(Resource):
 
         logger_api.info(f'Successfully create account for username: {username}!')
         return response, 201
-    
+
 from apscheduler.schedulers.background import BackgroundScheduler
 import datetime
 
