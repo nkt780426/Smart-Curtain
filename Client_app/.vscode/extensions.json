@@ -1,0 +1,12 @@
+{
+    "recommendations": [
+      "antn9x.nextjs-component-generator",
+      "formulahendry.auto-close-tag",
+      "formulahendry.auto-rename-tag",
+      "cardinal90.multi-cursor-case-preserve",
+      "bradlc.vscode-tailwindcss",
+      "editorconfig.editorconfig",
+      "dbaeumer.vscode-eslint",
+      "streetsidesoftware.code-spell-checker"
+    ]
+  }
