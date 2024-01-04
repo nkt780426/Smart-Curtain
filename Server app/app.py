@@ -222,7 +222,7 @@ class LoginResource(Resource):
             print(f"Access token: {access_token}")
 
             # Thiết lập cookies cho access token và refresh token trực tiếp trên response
-            response = make_response(jsonify({"status": True}), 200)
+            response = make_response(jsonify({"status": True, "access_token": access_token}), 200)
             set_access_cookies(response, access_token)
 
             logger_api.info(f'Username: {username} -- logged in successfully!')
@@ -487,4 +487,4 @@ def wait_for_alarm_response(has_response, correlation_data):
     has_response.set()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
