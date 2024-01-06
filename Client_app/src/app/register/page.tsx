@@ -9,36 +9,40 @@ import clsx from 'clsx';
 import Input from '@/components/base/Input';
 import { ErrorText } from '@/components/base/ErrorText';
 import { PinkButton } from '@/components/base/Button';
-import { logIn } from '@/common/api';
+import { registerApi } from '@/common/api';
 import Link from 'next/link';
 
-const LoginSchema = yup.object().shape({
+const RegisterSchema = yup.object().shape({
   username: yup
     .string()
     .required('Username is required'),
   password: yup
     .string()
-    .required('Password is required')
+    .required('Password is required'),
+  confirmPassword: yup
+    .string()
+    .required('Confirm password is required'),
 });
 
-export default function Login() {
+export default function Register() {
   const router = useRouter();
 
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
-  } = useForm({ resolver: yupResolver(LoginSchema) });
+  } = useForm({ resolver: yupResolver(RegisterSchema) });
 
   const onSubmit = (data: any) => {
-    console.log(data)
-    logIn(data)
+    if (data.password !== data.confirmPassword) {
+      setError('confirmPassword', { message: 'Confirm password is not match' })
+      return
+    }
+    registerApi(data)
       .then(res => {
-        toast.success('Login successfully')
-        if (res.data) {
-          localStorage.setItem('accessToken', res.data.access_token)
-        }
-        router.push('/home')
+        toast.success('Register successfully')
+        router.push('/login')
       })
       .catch(err => {
         toast.error(err.response.data.error || 'Try again')
@@ -49,9 +53,9 @@ export default function Login() {
     <main className="flex min-h-screen flex-col items-center bg-white sm:bg-gradient-to-tr from-purple-300 to-blue-300">
       <div className="grid p-5 md:p-10 justify-items-center w-auto m-auto bg-white rounded-2xl">
         <div className="text-center text-[20px] font-bold mb-5 text-black max-w-[400px] min-w-[80vw] md:min-w-[400px]">
-          Login
+          Register
           <div className="text-[14px] font-normal">
-            Welcome back. Nice to see you again
+            Create your account to continue
           </div>
         </div>
         <form
@@ -62,7 +66,6 @@ export default function Login() {
             className={clsx('w-full', errors?.username ? 'mb-0' : 'mb-2')}
             placeholder="Username"
             {...register('username')}
-
           />
           <ErrorText>{errors.username?.message}</ErrorText>
 
@@ -73,18 +76,22 @@ export default function Login() {
             type='password'
           />
           <ErrorText>{errors.password?.message}</ErrorText>
-          {/* <div
-            className="text-gray-800 italic mt-2 mb-4 text-right underline text-[15px] w-fit justify-self-end"
-          >
-            Forget your password?
-          </div> */}
+
+          <Input
+            className={clsx('w-full', errors?.confirmPassword ? 'mb-0' : 'mb-2')}
+            placeholder="Confirm your password"
+            {...register('confirmPassword')}
+            type='password'
+          />
+          <ErrorText>{errors.confirmPassword?.message}</ErrorText>
+
           <PinkButton
             className={clsx('w-full uppercase')}
             onClick={handleSubmit(onSubmit)}
           >
-            Log in
+            Register
           </PinkButton>
-          <Link href='/register' className='text-gray-800 underline italic text-sm w-fit mx-auto mt-1'>No account? Register</Link>
+          <Link href='/login' className='text-gray-800 underline italic text-sm w-fit mx-auto mt-1'>Already have an account? Log in</Link>
         </form>
       </div>
     </main>

@@ -1,8 +1,10 @@
 from flask import Flask
 from flask_mqtt import Mqtt
+# from flask_cors import CORS, cross_origin
 
 # Tạo các instance
 app = Flask(__name__)
+# CORS(app)
 
 # Cấu hình log
 import logging
@@ -650,4 +652,4 @@ class CancelAlarmResource(Resource):
 
 #  -----------------------------------------------------------------------
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
