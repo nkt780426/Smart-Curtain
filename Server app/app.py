@@ -606,11 +606,11 @@ def delete_job(username, job_id, collections):
         return True
     return False
 
-@app.route('/cancel_alarm')
+@api.route('/cancel_alarm')
 class CancelAlarmResource(Resource):
     @jwt_required(optional=True)
     @api.doc('cancel alarm mode', params={'type':'type of alarm', 'job_id':'job_id'})
-    @api.expect(once_alarm_model)
+    @api.expect(cancel_alarm_model)
     @api.response(201, 'Success', result_model)
     @api.response(401, 'User is not log in', error_model)
     @api.response(404, 'Not found job', error_model)
