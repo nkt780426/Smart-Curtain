@@ -84,7 +84,7 @@ export default function Login() {
           >
             Log in
           </PinkButton>
-          <Link href='/register' className='text-gray-800 underline italic text-sm w-fit mx-auto mt-1'>No account? Register</Link>
+          {/* <Link href='/register' className='text-gray-800 underline italic text-sm w-fit mx-auto mt-1'>No account? Register</Link> */}
         </form>
       </div>
     </main>
