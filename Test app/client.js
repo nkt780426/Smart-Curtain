@@ -18,6 +18,13 @@ socket.on('auto_mode', (data) => {
     console.log('Received inform message:', data);
 });
 
+socket.on('esp32_status', (data) => {
+    //xử lý nó sập kiểu redirecrt nó đến 1 trang nào khác
+    console.log('Received inform message:', data);
+    // Nhận về 2 thông điệp true hoặc false
+});
+
+
 // Xử lý sự kiện khi mất kết nối
 socket.on('disconnect', () => {
     console.log('Disconnected from server');

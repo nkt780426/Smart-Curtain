@@ -32,9 +32,8 @@ mqtt = Mqtt(app)
 
     # Các biến phục vụ routes
 esp32_status = False
-auto_model = False
+auto_mode = False
 auto_responses = {}
-alarm_mode = None
 alarm_responses = {}
 
 @mqtt.on_connect()
@@ -111,19 +110,11 @@ def handle_auto_response_messages(message):
 
     try:
         auto_response = json.loads(payload)
-        global auto_model
-        if 'correlation_data' in auto_response:
-            correlation_data = auto_response['correlation_data']
-            global auto_responses
-            auto_model = auto_responses[correlation_data] = auto_response['status']
-            logger_broker.info(f'Response for request message has correlation_data: {correlation_data} -- {payload}')
-        else:
-            # Khi chế độ alarm bật thì chế độ auto bị tắt đi, lúc này esp32 sẽ gửi lại 1 gói tin lên topic này và nó không có trường correlation_data
-            auto_model = False
-            message = json.dumps(False)
-            socketio.emit('auto_mode', message)
-            logger_broker.info('Auto mode off because alarm mode is on!')
-
+        global auto_mode
+        correlation_data = auto_response['correlation_data']
+        global auto_responses
+        auto_mode = auto_responses[correlation_data] = auto_response['status']
+        logger_broker.info(f'Response for request message has correlation_data: {correlation_data} -- {payload}')
     except Exception as e:
         logger_broker.error(f"Error processing Message_ID: {message.mid} -- Error: {e}")
 
@@ -135,8 +126,8 @@ def handle_alarm_response_messages(message):
     try:
         alarm_response = json.loads(payload)
         correlation_data = alarm_response['correlation_data']
-        global alarm_responses, alarm_mode
-        alarm_mode = alarm_responses[correlation_data] = alarm_response['status']
+        global alarm_responses
+        alarm_responses[correlation_data] = alarm_response['status']
         logger_broker.info(f'Response for request message has correlation_data: {correlation_data} -- {payload}')
 
     except Exception as e:
@@ -152,6 +143,7 @@ def handle_esp32_status_messages(message):
         activate = data['activate']
         global esp32_status
         esp32_status = activate
+        socketio.emit('esp32_status', payload)
 
         if activate :
             logger_broker.critical(f"Esp32 successfully connected to the broker!")
@@ -177,6 +169,11 @@ api = Api(app, title='Bạn Hoàng rất đẹp trai!', version='1.0', descripti
 # Tạo model để validate dữ liệu trả về (Swagger)
 result_model = api.model('result',{
     'status': fields.Boolean(required=True)
+})
+
+alarm_responses_model = api.model('alarm_responses',{
+    'type': fields.String(required=True),
+    'job_id': fields.String(required=True)
 })
 
 error_model = api.model('error',{
@@ -303,7 +300,7 @@ def clean_blacklist():
     blacklist.difference_update(expired_tokens)
 
 # Thiết lập tiến trình định kỳ
-scheduler = BackgroundScheduler()
+scheduler = BackgroundScheduler(timezone='Asia/Ho_Chi_Minh')
 scheduler.add_job(clean_blacklist, 'interval', minutes=30)  # Cập nhật mỗi 30 phút
 scheduler.start()
 
@@ -316,15 +313,26 @@ auto_model = api.model('auto',{
     'percent': fields.Integer(required=True)
 })
 
-alarm_model = api.model('alarm',{
-    'status': fields.Boolean(required=True),
-    'time': fields.DateTime(required=True),
-    'percent': fields.Float(required=True)
+daily_alarm_model = api.model('daily_alarm',{
+    'percent': fields.Float(required=True, description='openess'),
+    'hours': fields.Integer(required=True, description='hours'),
+    'minutes': fields.Integer(required=True, description='minutes')
+})
+
+once_alarm_model = api.model('once_alarm',{
+    'percent': fields.Float(required=True, description='openess'),
+    'specify_time': fields.String(required=True, description='Time to alarm')
+})
+
+cancel_alarm_model = api.model('cancel_alarm',{
+    'type': fields.String(required=True),
+    'job_id': fields.String(required=True)
 })
 
 status_model = api.model('status',{
     'auto': fields.Nested(auto_model),
-    'alarm': fields.Nested(alarm_model)
+    'daily_alarm': fields.List(fields.Nested(daily_alarm_model)),
+    'once_alarm': fields.List(fields.Nested(once_alarm_model))
 })
 
 @api.route('/status')
@@ -343,10 +351,16 @@ class StatusResource(Resource):
             global esp32_status
 
             if esp32_status:
-                global auto_model, alarm_mode
-                auto_status = {'status': auto_model}
-                alarm_status = {'status': alarm_mode['status'], 'time': alarm_mode['time'], 'percent': alarm_mode['percent']}
-                response = {'auto': auto_status, 'alarm': alarm_status}
+                global auto_mode, daily_alarm_collections, once_alarm_collections
+                auto_status = {'status': auto_mode}
+
+                daily_alarms_cursor = daily_alarm_collections.find({"username": current_user})
+                daily_alarms = [daily_alarm for daily_alarm in daily_alarms_cursor]
+
+                once_alarms_cursor = once_alarm_collections.find({"username": current_user})
+                once_alarms = [once_alarm for once_alarm in once_alarms_cursor]
+
+                response = {'auto': auto_status, 'daily_alarm': daily_alarms, 'once_alarm': once_alarms}
                 logger_api.info(f'Username: {current_user} -- Response for GET "/status": 200 {response}')
                 return response, 200
             
@@ -381,6 +395,7 @@ class AutoModeResource(Resource):
             global esp32_status
 
             if esp32_status:
+                # Tạo gói tin gửi đi esp32
                 message = {}
                 message['status'] = data.get('status')
                 message['percent'] = data.get('percent')
@@ -390,13 +405,14 @@ class AutoModeResource(Resource):
 
                 global mqtt
                 mqtt.publish('auto_requests', message_json, qos = 2)
+                logger_broker.info(f'Send message has correlation data : {correlation_data} -- payload: {message_json}')
 
-                # Set sự kiện đợi response trở về
+                # Đợi esp32 phản hồi
                 has_response = Event()
                 wait_for_response_thread = Thread(target =wait_for_auto_response, args = (has_response, correlation_data))
                 wait_for_response_thread.start()
 
-                # đợi đến khi thành công
+                # ESP32 phản hồi thành công
                 has_response.wait()
                 # Reset the event for the next API request
                 has_response.clear()
@@ -424,61 +440,34 @@ def wait_for_auto_response(has_response, correlation_data):
     # Đánh thức
     has_response.set()
 
-@api.route('/alarm')
-class AlarmModeResource(Resource):
-    @jwt_required(optional=True)
-    @api.doc('alarm mode', params={'status': 'Turn on or off alarm mode!', 'time': 'Time to set curtain','percent':'openess'})
-    @api.expect(alarm_model)
-    @api.response(201, 'Success', result_model)
-    @api.response(401, 'User is not loggeg in', error_model)
-    @api.response(501, 'Esp32 disconnect to broker', error_model)
-    def post(self):
-        ''''Adjust alarm mode and handle curtain'''
-        current_user = get_jwt_identity()
-        if current_user:
-            data = request.get_json()
-            logger_api.info(f'Username: {current_user} -- POST "/alarm" with payload {data}')
-            global esp32_status
+# ---------------------  Alarm and handle curtain api -------------------------------------------
 
-            if esp32_status:
-                message = {}
-                message['status'] = request.json.get('status')
-                message['time'] = request.json.get('time')
-                message['percent'] = request.json.get('percent')
-                correlation_data = str(uuid.uuid4())
-                message['correlation_data'] = correlation_data
-                message_json = json.dumps(message)
+# Mỗi khi đến giờ publish 1 message đến esp32
+def send_alarm_message_to_esp32(percent):
+    # Tạo message gửi đi esp32
+    message = {}
+    message['percent'] = percent
+    correlation_data = str(uuid.uuid4())
+    message['correlation_data'] = correlation_data
+    message_json = json.dumps(message)
 
-                global mqtt
-                mqtt.publish('alarm_requests', message_json, qos = 2)
+    global mqtt
+    mqtt.publish('alarm_requests', message_json, qos = 2)
+    logger_broker.info(f'Send message has corrrelation data: {correlation_data} -- payload: {message_json}')
 
-                # Set sự kiện đợi response trở về
-                has_response = Event()
-                wait_for_response_thread = Thread(target =wait_for_alarm_response, args = (has_response, correlation_data))
-                wait_for_response_thread.start()
+    # Đợi message từ esp32
+    has_response = Event()
+    wait_for_response_thread = Thread(target =wait_for_alarm_response, args = (has_response, correlation_data))
+    wait_for_response_thread.start()
+    has_response.wait()
+    # Reset the event for the next API request
+    has_response.clear()
 
-                # đợi đến khi thành công
-                has_response.wait()
-                # Reset the event for the next API request
-                has_response.clear()
+    # Sau khi esp32 phản hồi
+    global alarm_responses
+    del alarm_responses[correlation_data]
 
-                global alarm_responses
-                status = alarm_responses[correlation_data]
-                del alarm_responses[correlation_data]
-                response = {'status': status}
-                logger_api.info(f'Username: {current_user} -- Response for POST "/alarm": 201 {response}')
-                return response, 201
-
-            response = {'error': "Esp32 disconnect to broker!"}
-            logger_api.info(f'Username: {current_user} -- Response for POST "/alarm": 501 {response}')
-            return response, 501
-        else:
-            response = {"error": "User is not logged in"}
-            logger_api.info(f'Username: {current_user} -- Response for POST "/alarm": 401 {response}')
-            return response, 401
-
-
-# đợi response từ mqtt
+# đợi response từ broker
 def wait_for_alarm_response(has_response, correlation_data):
     global alarm_responses
     while correlation_data not in alarm_responses:
@@ -486,5 +475,179 @@ def wait_for_alarm_response(has_response, correlation_data):
     # Đánh thức
     has_response.set()
 
+# Tạo job với 2 kiểu alarm
+from apscheduler.triggers.cron import CronTrigger
+
+daily_alarm_collections = db['daily_alarm']
+def create_daily_alarm(username, percent, hours, minutes):
+    # Kiểm tra giá trị của hours và minutes
+    if 0 <= hours <= 23 and 0 <= minutes <= 59:
+        cron_expression = f"{minutes} {hours} * * *"
+        trigger = CronTrigger.from_crontab(cron_expression)
+        job = scheduler.add_job(send_alarm_message_to_esp32, args=[percent], trigger=trigger)
+
+        alarm_data = {
+                "username": username,
+                "percent": percent,
+                "hours": hours,
+                "minutes": minutes,
+                "job_id": str(job.id)  # Convert ObjectId sang str để lưu vào MongoDB
+        }
+        daily_alarm_collections.insert_one(alarm_data)
+        return job.id
+    else:
+        return None  # Hoặc có thể trả về một giá trị đặc biệt để biểu thị lỗi, ví dụ: -1
+
+from apscheduler.triggers.date import DateTrigger
+import pytz
+
+once_alarm_collections = db['once_alarm_collections']
+def create_once_alarm(username, percent, iso_time):
+    try:
+        time_utc = datetime.fromisoformat(iso_time)
+        time_vietnam = time_utc.replace(tzinfo=pytz.utc).astimezone(pytz.timezone('Asia/Ho_Chi_Minh'))
+
+        trigger = DateTrigger(run_date=time_vietnam)
+        job = scheduler.add_job(send_alarm_message_to_esp32, args=[percent], trigger=trigger)
+
+        alarm_data = {
+                "username": username,
+                "percent": percent,
+                "iso_time": str(iso_time),
+                "job_id": str(job.id)  # Convert ObjectId sang str để lưu vào MongoDB
+        }
+        once_alarm_collections.insert_one(alarm_data)
+        return job.id
+    except Exception as e:
+        return str(e)
+
+@api.route('/daily_alarm')
+class DailyAlarmResource(Resource):
+    @jwt_required(optional=True)
+    @api.doc('daily alarm mode', params={'percent':'openess', 'hours':'hour', 'minutes':'minute'})
+    @api.expect(daily_alarm_model)
+    @api.response(201, 'Success', alarm_responses_model)
+    @api.response(400, 'Wrong date format', error_model)
+    @api.response(401, 'User is not log in', error_model)
+    @api.response(501, 'Esp32 disconnect to broker', error_model)
+    def post(self):
+        ''''Daly alarm mode curtain'''
+        current_user = get_jwt_identity()
+        if current_user:
+            data = request.get_json()
+            logger_api.info(f'Username: {current_user} -- POST "/daily_alarm" with payload {data}')
+            global esp32_status
+
+            if esp32_status:
+                job_id=create_daily_alarm(current_user, data['percent'], data['hours'], data['minutes'])
+                if job_id is not None:
+                    response = {'status': "true", 'job_id': job_id}
+                    logger_api.info(f'Username: {current_user} -- Response for POST "/daily_alarm": 201 {response}')
+                    return response, 201
+                
+                response = {'error': "Wrong date format"}
+                logger_api.info(f'Username: {current_user} -- Response for POST "/daily_alarm": 400 {response}')
+                return response, 400
+            
+            response = {'error': "Esp32 disconnect to broker!"}
+            logger_api.info(f'Username: {current_user} -- Response for POST "/daily_alarm": 501 {response}')
+            return response, 501
+
+        response = {"error": "User is not logged in"}
+        logger_api.info(f'Username: {current_user} -- Response for POST "/daily_alarm": 401 {response}')
+        return response, 401
+
+@api.route('/once_alarm')
+class OnceAlarmResource(Resource):
+    @jwt_required(optional=True)
+    @api.doc('once alarm mode', params={'percent':'openess', 'specify_time':'time to alarm'})
+    @api.expect(once_alarm_model)
+    @api.response(201, 'Success', alarm_responses_model)
+    @api.response(400, 'Wrong date format', error_model)
+    @api.response(401, 'User is not log in', error_model)
+    @api.response(501, 'Esp32 disconnect to broker', error_model)
+    def post(self):
+        ''''Once alarm mode curtain'''
+        current_user = get_jwt_identity()
+        if current_user:
+            data = request.get_json()
+            logger_api.info(f'Username: {current_user} -- POST "/once_alarm" with payload {data}')
+            global esp32_status
+
+            if esp32_status:
+                try:
+                    job_id=create_once_alarm(current_user, data['percent'],data['specify_time'])
+
+                except Exception as e:
+                    response = {'error': "Wrong date format"}
+                    logger_api.info(f'Username: {current_user} -- Response for POST "/once_alarm": 400 {response}')
+                    return response, 400
+                
+                response = {'status': "true", 'job_id': job_id}
+                logger_api.info(f'Username: {current_user} -- Response for POST "/once_alarm": 201 {response}')
+                return response, 201
+
+            response = {'error': "Esp32 disconnect to broker!"}
+            logger_api.info(f'Username: {current_user} -- Response for POST "/once_alarm": 501 {response}')
+            return response, 501
+        else:
+            response = {"error": "User is not logged in"}
+            logger_api.info(f'Username: {current_user} -- Response for POST "/once_alarm": 401 {response}')
+            return response, 401
+
+def delete_job(username, job_id, collections):
+    alarm_info = collections.find_one({"job_id": job_id, "username": username})
+    if alarm_info:
+        # Báo thức được tìm thấy, tiến hành xóa job và tài liệu trong MongoDB
+        scheduler.remove_job(job_id)
+        collections.delete_one({"job_id": job_id})
+        return True
+    return False
+
+@app.route('/cancel_alarm')
+class CancelAlarmResource(Resource):
+    @jwt_required(optional=True)
+    @api.doc('cancel alarm mode', params={'type':'type of alarm', 'job_id':'job_id'})
+    @api.expect(once_alarm_model)
+    @api.response(201, 'Success', result_model)
+    @api.response(401, 'User is not log in', error_model)
+    @api.response(404, 'Not found job', error_model)
+    @api.response(501, 'Esp32 disconnect to broker', error_model)
+    def delete(self):
+        ''''Cancel alarm mode curtain'''
+        current_user = get_jwt_identity()
+        if current_user:
+            data = request.get_json()
+            logger_api.info(f'Username: {current_user} -- POST "/cancel_alarm" with payload {data}')
+            global esp32_status
+
+            if esp32_status:
+                result = None
+                if data['type'] == 'daily':
+                    global daily_alarm_collections
+                    result = delete_job(current_user, data['job_id'], daily_alarm_collections)
+
+                if data['type'] == 'daily':
+                    global once_alarm_collections
+                    result = delete_job(current_user, data['job_id'], once_alarm_collections)
+                
+                if result:
+                    response = {'status': "true"}
+                    logger_api.info(f'Username: {current_user} -- Response for POST "/cancel_alarm": 201 {response}')
+                    return response, 201
+                
+                response = {'error': "Not found job!"}
+                logger_api.info(f'Username: {current_user} -- Response for POST "/cancel_alarm": 404 {response}')
+                return response, 404
+            
+            response = {'error': "Esp32 disconnect to broker!"}
+            logger_api.info(f'Username: {current_user} -- Response for POST "/cancel_alarm": 501 {response}')
+            return response, 501
+        
+        response = {"error": "User is not logged in"}
+        logger_api.info(f'Username: {current_user} -- Response for POST "/cancel_alarm": 401 {response}')
+        return response, 401
+
+#  -----------------------------------------------------------------------
 if __name__ == '__main__':
     app.run(debug=False)

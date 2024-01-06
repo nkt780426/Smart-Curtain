@@ -1,8 +1,0 @@
-2024-01-03 15:04:11,004 - INFO - Username: None -- Response for GET "/status": 401 {'error': 'User is not logged in'}
-2024-01-03 15:07:09,537 - INFO - Creating account for username: hienhienn.
-2024-01-03 15:07:10,219 - INFO - Successfully create account for username: hienhienn!
-2024-01-03 15:07:19,209 - INFO - Creating account for username: 1.
-2024-01-03 15:07:19,804 - INFO - Successfully create account for username: 1!
-2024-01-03 15:41:06,924 - INFO - Username: 1 -- is logging in!
-2024-01-03 15:41:06,941 - INFO - Username: 1 -- logged in successfully!
-2024-01-03 15:41:20,258 - INFO - Username: 1 -- logged in failed!
