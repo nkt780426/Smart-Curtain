@@ -63,3 +63,120 @@
 2024-01-02 09:45:29,329 - INFO - Begin sent message has id: 201 to websocket name 'inform'!
 2024-01-02 09:45:29,329 - INFO - Success sent message has id: 201 to websocket name 'inform'!
 2024-01-02 09:45:29,329 - INFO - Begin save inform message has id: 201 into collection "inform"!
+2024-01-06 09:56:37,066 - INFO - Connected with result code 0
+2024-01-06 09:56:37,362 - INFO - Subscription id 1 granted with qos (2,).
+2024-01-06 09:56:37,673 - INFO - Subscription id 2 granted with qos (1,).
+2024-01-06 09:56:37,673 - INFO - Subscription id 3 granted with qos (2,).
+2024-01-06 09:56:37,674 - INFO - Subscription id 4 granted with qos (2,).
+2024-01-06 09:56:37,980 - INFO - Received Message_ID: 51 -- on topic esp32_status: {
+  "activate": false
+}
+2024-01-06 09:56:37,981 - CRITICAL - Esp32 disconect to the broker!
+2024-01-06 09:56:39,029 - INFO - Connected with result code 0
+2024-01-06 09:56:39,294 - INFO - Subscription id 1 granted with qos (2,).
+2024-01-06 09:56:39,559 - INFO - Subscription id 2 granted with qos (1,).
+2024-01-06 09:56:39,560 - INFO - Subscription id 3 granted with qos (2,).
+2024-01-06 09:56:39,562 - INFO - Subscription id 4 granted with qos (2,).
+2024-01-06 09:56:39,824 - INFO - Received Message_ID: 51 -- on topic esp32_status: {
+  "activate": false
+}
+2024-01-06 09:56:39,824 - CRITICAL - Esp32 disconect to the broker!
+2024-01-06 09:57:03,883 - INFO - Connected with result code 0
+2024-01-06 09:57:04,169 - INFO - Subscription id 1 granted with qos (2,).
+2024-01-06 09:57:04,448 - INFO - Subscription id 2 granted with qos (1,).
+2024-01-06 09:57:04,449 - INFO - Subscription id 3 granted with qos (2,).
+2024-01-06 09:57:04,451 - INFO - Subscription id 4 granted with qos (2,).
+2024-01-06 09:57:04,727 - INFO - Received Message_ID: 51 -- on topic esp32_status: {
+  "activate": false
+}
+2024-01-06 09:57:04,727 - CRITICAL - Esp32 disconect to the broker!
+2024-01-06 09:57:14,635 - INFO - Connected with result code 0
+2024-01-06 09:57:14,944 - INFO - Subscription id 1 granted with qos (2,).
+2024-01-06 09:57:15,249 - INFO - Subscription id 2 granted with qos (1,).
+2024-01-06 09:57:15,250 - INFO - Subscription id 3 granted with qos (2,).
+2024-01-06 09:57:15,250 - INFO - Subscription id 4 granted with qos (2,).
+2024-01-06 09:57:15,557 - INFO - Received Message_ID: 51 -- on topic esp32_status: {
+  "activate": false
+}
+2024-01-06 09:57:15,557 - CRITICAL - Esp32 disconect to the broker!
+2024-01-06 09:57:16,550 - INFO - Connected with result code 0
+2024-01-06 09:57:16,843 - INFO - Subscription id 1 granted with qos (2,).
+2024-01-06 09:57:17,082 - INFO - Subscription id 2 granted with qos (1,).
+2024-01-06 09:57:17,082 - INFO - Subscription id 3 granted with qos (2,).
+2024-01-06 09:57:17,084 - INFO - Subscription id 4 granted with qos (2,).
+2024-01-06 09:57:17,344 - INFO - Received Message_ID: 51 -- on topic esp32_status: {
+  "activate": false
+}
+2024-01-06 09:57:17,344 - CRITICAL - Esp32 disconect to the broker!
+2024-01-06 09:57:29,439 - INFO - Connected with result code 0
+2024-01-06 09:57:29,790 - INFO - Subscription id 1 granted with qos (2,).
+2024-01-06 09:57:30,098 - INFO - Subscription id 2 granted with qos (1,).
+2024-01-06 09:57:30,098 - INFO - Subscription id 3 granted with qos (2,).
+2024-01-06 09:57:30,098 - INFO - Subscription id 4 granted with qos (2,).
+2024-01-06 09:57:30,404 - INFO - Received Message_ID: 51 -- on topic esp32_status: {
+  "activate": false
+}
+2024-01-06 09:57:30,404 - CRITICAL - Esp32 disconect to the broker!
+2024-01-06 09:58:36,742 - INFO - Connected with result code 0
+2024-01-06 09:58:37,064 - INFO - Subscription id 1 granted with qos (2,).
+2024-01-06 09:58:37,372 - INFO - Subscription id 2 granted with qos (1,).
+2024-01-06 09:58:37,373 - INFO - Subscription id 3 granted with qos (2,).
+2024-01-06 09:58:37,373 - INFO - Subscription id 4 granted with qos (2,).
+2024-01-06 09:58:37,658 - INFO - Received Message_ID: 51 -- on topic esp32_status: {
+  "activate": false
+}
+2024-01-06 09:58:37,658 - CRITICAL - Esp32 disconect to the broker!
+2024-01-06 09:58:56,907 - INFO - Connected with result code 0
+2024-01-06 09:58:57,195 - INFO - Subscription id 1 granted with qos (2,).
+2024-01-06 09:58:57,475 - INFO - Subscription id 2 granted with qos (1,).
+2024-01-06 09:58:57,476 - INFO - Subscription id 3 granted with qos (2,).
+2024-01-06 09:58:57,476 - INFO - Subscription id 4 granted with qos (2,).
+2024-01-06 09:58:57,749 - INFO - Received Message_ID: 51 -- on topic esp32_status: {
+  "activate": false
+}
+2024-01-06 09:58:57,750 - CRITICAL - Esp32 disconect to the broker!
+2024-01-06 09:59:17,306 - INFO - Connected with result code 0
+2024-01-06 09:59:17,615 - INFO - Subscription id 1 granted with qos (2,).
+2024-01-06 09:59:17,878 - INFO - Subscription id 2 granted with qos (1,).
+2024-01-06 09:59:17,880 - INFO - Subscription id 3 granted with qos (2,).
+2024-01-06 09:59:17,881 - INFO - Subscription id 4 granted with qos (2,).
+2024-01-06 09:59:18,150 - INFO - Received Message_ID: 51 -- on topic esp32_status: {
+  "activate": false
+}
+2024-01-06 09:59:18,150 - CRITICAL - Esp32 disconect to the broker!
+2024-01-06 09:59:19,304 - INFO - Connected with result code 0
+2024-01-06 09:59:19,584 - INFO - Subscription id 1 granted with qos (2,).
+2024-01-06 09:59:19,863 - INFO - Subscription id 2 granted with qos (1,).
+2024-01-06 09:59:19,864 - INFO - Subscription id 3 granted with qos (2,).
+2024-01-06 09:59:19,866 - INFO - Subscription id 4 granted with qos (2,).
+2024-01-06 09:59:20,142 - INFO - Received Message_ID: 51 -- on topic esp32_status: {
+  "activate": false
+}
+2024-01-06 09:59:20,142 - CRITICAL - Esp32 disconect to the broker!
+2024-01-06 09:59:50,547 - INFO - Connected with result code 0
+2024-01-06 09:59:50,818 - INFO - Subscription id 1 granted with qos (2,).
+2024-01-06 09:59:51,085 - INFO - Subscription id 2 granted with qos (1,).
+2024-01-06 09:59:51,086 - INFO - Subscription id 3 granted with qos (2,).
+2024-01-06 09:59:51,087 - INFO - Subscription id 4 granted with qos (2,).
+2024-01-06 09:59:51,352 - INFO - Received Message_ID: 51 -- on topic esp32_status: {
+  "activate": false
+}
+2024-01-06 09:59:51,352 - CRITICAL - Esp32 disconect to the broker!
+2024-01-06 09:59:52,451 - INFO - Connected with result code 0
+2024-01-06 09:59:52,740 - INFO - Subscription id 1 granted with qos (2,).
+2024-01-06 09:59:53,027 - INFO - Subscription id 2 granted with qos (1,).
+2024-01-06 09:59:53,029 - INFO - Subscription id 3 granted with qos (2,).
+2024-01-06 09:59:53,030 - INFO - Subscription id 4 granted with qos (2,).
+2024-01-06 09:59:53,318 - INFO - Received Message_ID: 51 -- on topic esp32_status: {
+  "activate": false
+}
+2024-01-06 09:59:53,318 - CRITICAL - Esp32 disconect to the broker!
+2024-01-06 11:00:43,054 - INFO - Connected with result code 0
+2024-01-06 11:00:43,402 - INFO - Subscription id 1 granted with qos (2,).
+2024-01-06 11:00:43,707 - INFO - Subscription id 2 granted with qos (1,).
+2024-01-06 11:00:43,707 - INFO - Subscription id 3 granted with qos (2,).
+2024-01-06 11:00:43,707 - INFO - Subscription id 4 granted with qos (2,).
+2024-01-06 11:00:43,973 - INFO - Received Message_ID: 51 -- on topic esp32_status: {
+  "activate": false
+}
+2024-01-06 11:00:43,974 - CRITICAL - Esp32 disconect to the broker!

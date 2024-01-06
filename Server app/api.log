@@ -8,3 +8,41 @@
 2024-01-01 23:29:49,024 - INFO - Username: hoang -- POST "/alarm" with payload {'status': True, 'time': '2024-01-01T16:16:26.651Z', 'percent': 0}
 2024-01-01 23:32:05,058 - INFO - Username: hoang -- POST "/alarm" with payload {'status': True, 'time': '2024-01-01T16:16:26.651Z', 'percent': 0}
 2024-01-01 23:34:17,672 - INFO - Username: hoang -- Response for POST "/alarm": 201 {'status': True}
+2024-01-06 09:58:21,573 - INFO - Username: 1 -- is logging in!
+2024-01-06 09:58:21,575 - INFO - Username: 1 -- logged in successfully!
+2024-01-06 09:58:42,235 - INFO - Username: 1 -- is logging in!
+2024-01-06 09:58:42,236 - INFO - Username: 1 -- logged in successfully!
+2024-01-06 09:59:54,263 - INFO - Username: 1 -- is logging in!
+2024-01-06 09:59:54,264 - INFO - Username: 1 -- logged in successfully!
+2024-01-06 10:12:12,537 - INFO - Username: 1 -- is logging in!
+2024-01-06 10:12:12,539 - INFO - Username: 1 -- logged in successfully!
+2024-01-06 10:13:02,815 - INFO - Username: 1 -- logged in failed!
+2024-01-06 10:13:26,383 - INFO - Username: 1 -- is logging in!
+2024-01-06 10:13:26,392 - INFO - Username: 1 -- logged in successfully!
+2024-01-06 10:13:32,500 - INFO - Username: 1 -- logged in failed!
+2024-01-06 10:13:53,752 - INFO - Username: 1 -- logged in failed!
+2024-01-06 10:19:17,739 - INFO - Username: 1 -- logged in failed!
+2024-01-06 10:21:01,164 - INFO - Username: 1 -- is logging in!
+2024-01-06 10:21:01,169 - INFO - Username: 1 -- logged in successfully!
+2024-01-06 10:21:25,956 - INFO - Username: 1 -- is logging in!
+2024-01-06 10:21:25,958 - INFO - Username: 1 -- logged in successfully!
+2024-01-06 10:34:05,238 - INFO - Username: 1 -- is logging in!
+2024-01-06 10:34:05,240 - INFO - Username: 1 -- logged in successfully!
+2024-01-06 10:37:23,037 - INFO - Creating account for username: 1.
+2024-01-06 10:37:23,118 - INFO - Failed to register account for username: 1 -- username already exists.
+2024-01-06 10:37:34,702 - INFO - Creating account for username: 2.
+2024-01-06 10:37:35,333 - INFO - Successfully create account for username: 2!
+2024-01-06 10:37:40,239 - INFO - Username: 2 -- logged in failed!
+2024-01-06 10:37:47,636 - INFO - Username: 2 -- is logging in!
+2024-01-06 10:37:47,637 - INFO - Username: 2 -- logged in successfully!
+2024-01-06 10:55:44,612 - INFO - Username: 1 -- is logging in!
+2024-01-06 10:55:44,623 - INFO - Username: 1 -- logged in successfully!
+2024-01-06 10:57:34,596 - INFO - Username: 1 -- is logging in!
+2024-01-06 10:57:34,598 - INFO - Username: 1 -- logged in successfully!
+2024-01-06 11:07:28,381 - INFO - Username: 1 -- is logging in!
+2024-01-06 11:07:28,383 - INFO - Username: 1 -- logged in successfully!
+2024-01-06 11:08:35,723 - INFO - Username: None -- Response for POST "/alarm": 401 {'error': 'User is not logged in'}
+2024-01-06 11:10:50,490 - INFO - Username: 1 -- POST "/alarm" with payload {'status': True, 'time': '2024-01-06T03:39:58.392Z', 'percent': 0}
+2024-01-06 11:10:50,490 - INFO - Username: 1 -- Response for POST "/alarm": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-06 11:12:40,006 - INFO - Username: 1 -- POST "/alarm" with payload {'status': True, 'time': '2024-01-06T03:39:58.392Z', 'percent': 0}
+2024-01-06 11:12:40,006 - INFO - Username: 1 -- Response for POST "/alarm": 501 {'error': 'Esp32 disconnect to broker!'}
