@@ -184,7 +184,8 @@ error_model = api.model('error',{
 
 account_model = api.model('account',{
     'username': fields.String(required=True),
-    'password': fields.String(required=True)
+    'password': fields.String(required=True),
+    'secret_curtain_code': fields.String(required=True)
 })
 
 # Check thông tin account trong db
@@ -260,6 +261,7 @@ class LogoutResource(Resource):
             return {"error": "User is not logged in"}, 401
 
 from werkzeug.security import generate_password_hash
+from config.app_config import AppConfig
 
 @api.route('/register')
 class RegisterResource(Resource):
@@ -272,6 +274,7 @@ class RegisterResource(Resource):
         data = request.get_json()
         username = data.get('username')
         password = data.get('password')
+        secret_curtain_code = data.get('secret_curtain_code')
         logger_api.info(f'Creating account for username: {username}.')
 
         # Kiểm tra xem tên người dùng đã tồn tại chưa
@@ -279,7 +282,11 @@ class RegisterResource(Resource):
         if existing_user:
             logger_api.info(f'Failed to register account for username: {username} -- username already exists.')
             return {"error": "Username already exists"}, 401
-
+        
+        if secret_curtain_code != AppConfig.SECRET_CURTAIN_CODE:
+            logger_api.info(f'Failed to register account for username: {username} -- Invalid curtain code.')
+            return {"error": "Invalid curtain code"}, 401
+        
         # Hash mật khẩu trước khi lưu vào database
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
 
