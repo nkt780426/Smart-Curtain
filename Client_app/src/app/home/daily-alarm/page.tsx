@@ -2,9 +2,9 @@
 
 import Input from "@/components/base/Input";
 import { MinusIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/solid";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { StatusContext } from "../layout";
-import { postDailyAlarm } from "@/common/api";
+import { cancelAlarm, postDailyAlarm } from "@/common/api";
 import { toast } from "react-toastify";
 import TimePicker from "react-time-picker";
 import 'react-time-picker/dist/TimePicker.css';
@@ -45,6 +45,7 @@ const DailyAlarm = () => {
       minutes: Number(data.time.split(':')[1]),
     }).then(res => {
       setTimeout(() => getStatus(), 100)
+      setIsAdd(false)
     })
       .catch(err => {
         console.log(err)
@@ -93,7 +94,7 @@ const DailyAlarm = () => {
         <div className='flex gap-2 mt-3'>
           <PinkButton className='w-fit' onClick={handleSubmit(onSubmit)}>Add</PinkButton>
 
-          <button onClick={ }>
+          <button onClick={() => setIsAdd(false)}>
             <XMarkIcon
               className="text-pink-500 w-6 h-6 my-auto"
             />
@@ -105,7 +106,17 @@ const DailyAlarm = () => {
         <div className="font-semibold">{e.hours}:{e.minutes}</div>
         <div className="flex gap-10 my-1">
           <div>{e.percent}%</div>
-        <button>
+          <button onClick={() => {
+            cancelAlarm()
+              .then(res => {
+                setTimeout(() => getStatus(), 100)
+                setIsAdd(false)
+              })
+              .catch(err => {
+                console.log(err)
+                toast.error(err.response.data.msg || err.response.data.error || 'Try again')
+              })
+          }}>
           <MinusIcon className="text-pink-500 w-6 h-6" />
         </button>
         </div>
