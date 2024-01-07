@@ -245,16 +245,16 @@ class LogoutResource(Resource):
             logger_api.info(f"Username: {current_user} -- is logging out!")
 
             # Thu hồi token
-            jti = current_user.get('jti')  # Sử dụng get để tránh lỗi nếu 'jti' không tồn tại
+            jti = getattr(current_user, 'jti', None)  # Sử dụng get để tránh lỗi nếu 'jti' không tồn tại
             if jti:
                 blacklist.add(jti)  # Thêm token vào danh sách đen khi đăng xuất
     
             # Xóa cookie liên quan đến jwt
-            unset_jwt_cookies(response)
-            response = jsonify({'status': True}, 200)
-
+            response = jsonify({'status': True})
             logger_api.info(f'Username: {current_user} -- Successfully logged out!')
-            return response
+
+            unset_jwt_cookies(response)
+            return response, 200
         else:
             logger_api.info(f'Username: {current_user} -- is not logged in!')
             return {"error": "User is not logged in"}, 401
