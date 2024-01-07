@@ -14,15 +14,20 @@ import { PinkButton } from "@/components/base/Button";
 import * as yup from 'yup'
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import DatePicker from "react-datepicker";
+import { registerLocale, setDefaultLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import vi from 'date-fns/locale/vi';
+registerLocale('vi', vi)
 
-const DailyAlarmSchema = yup.object().shape({
+const OnceAlarmSchema = yup.object().shape({
   percent: yup
     .number()
     .required('Percent is required')
     .min(0, 'Min of percent is 0')
     .max(100, 'Max of percent is 0'),
-  time: yup
-    .string()
+  specify_time: yup
+    .date()
     .required('Time is required')
 });
 
@@ -36,7 +41,7 @@ const DailyAlarm = () => {
     control,
     formState: { errors },
     handleSubmit,
-  } = useForm({ resolver: yupResolver(DailyAlarmSchema), defaultValues: { time: '00:00' } })
+  } = useForm({ resolver: yupResolver(OnceAlarmSchema), defaultValues: { specify_time: new Date() } })
 
   const onSubmit = (data: any) => {
     postDailyAlarm({
@@ -52,8 +57,8 @@ const DailyAlarm = () => {
       })
   }
   return <div className="container md:max-w-[80vw] m-auto px-5 mt-4">
-    <div className="flex justify-between mb-2">
-      <span className="text-xl">Daily Alarm</span>
+    <div className="flex justify-between">
+      <span className="text-xl">Once Alarm</span>
       <button
         onClick={() => setIsAdd(true)}
       >
@@ -65,21 +70,14 @@ const DailyAlarm = () => {
     </div>
     {isAdd &&
       <div className="border rounded-lg border-pink-300 mt-5 px-4 pb-4">
-        <div className="-translate-y-3 bg-white w-fit px-2 mx-2">Add daily alarm </div>
+        <div className="-translate-y-3 bg-white w-fit px-2 mx-2">Add once alarm </div>
         <div className="text-sm">Time</div>
         <Controller
-          name="time"
+          name="specify_time"
           control={control}
-          render={({ field }) => <TimePicker
-            className='flex-1 w-full'
-            onChange={(e) => field.onChange(e)}
-            value={field.value}
-            clockIcon={false}
-            disableClock={true}
-            // disabled={disabled} 
-            format="HH:mm"
-          />} />
-        <ErrorText>{errors.time?.message}</ErrorText>
+          render={({ field }) => <DatePicker />}
+        />
+        <ErrorText>{errors.specify_time?.message}</ErrorText>
         <div className="text-sm">Percent</div>
         <Input
           className='flex-1 w-full'
@@ -101,14 +99,12 @@ const DailyAlarm = () => {
         </div>
       </div>}
     <ul>
-      {status.daily_alarm.map((e: any, id: number) => <li key={id} className='flex justify-between w-full text-lg'>
-        <div className="font-semibold">{e.hours}:{e.minutes}</div>
-        <div className="flex gap-10 my-1">
-          <div>{e.percent}%</div>
+      {status.daily_alarm.map((e: any, id: number) => <li key={id}>
+        <span>{e.hours}:{e.minutes}</span>
+        <span>{e.percent}%</span>
         <button>
           <MinusIcon className="text-pink-500 w-6 h-6" />
         </button>
-        </div>
       </li>)}
     </ul>
   </div>;

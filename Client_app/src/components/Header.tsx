@@ -10,6 +10,7 @@ import Switch from "./base/Switch";
 import TimePicker from "react-time-picker";
 import "react-clock/dist/Clock.css";
 import { StatusContext } from "@/app/home/layout";
+import Link from "next/link";
 
 export const Header = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -41,9 +42,15 @@ export const Header = () => {
         )}
         style={{ height: "calc(100vh - 56px)" }}
       >
-        <li className="p-4 flex justify-between border-b border-pink-300 cursor-pointer hover:bg-pink-200">
-          <div className="">Dashboard</div>
-          <ChartBarSquareIcon className="w-6 h-6 text-pink-500" />
+
+        <li>
+          <Link
+            href='/home'
+            className="p-4 flex justify-between border-b border-pink-300 cursor-pointer hover:bg-pink-200"
+          >
+            <div className="">Dashboard</div>
+            <ChartBarSquareIcon className="w-6 h-6 text-pink-500" />
+          </Link>
         </li>
         <li className="p-4 flex justify-between border-b border-pink-300">
           <div className="">Automation</div>
@@ -53,17 +60,27 @@ export const Header = () => {
             name="automation"
           />
         </li>
-        <li className="p-4 flex justify-between border-b border-pink-300 cursor-pointer hover:bg-pink-200">
-          <div className="">Daily alarm</div>
-          <div className="bg-pink-500 w-6 h-6 text-sm text-center leading-6 rounded-full text-white">
-            0
-          </div>
+        <li>
+          <Link
+            href='/home/daily-alarm'
+            className="p-4 flex justify-between border-b border-pink-300 cursor-pointer hover:bg-pink-200"
+          >
+            <div className="">Daily alarm</div>
+            <div className="bg-pink-500 w-6 h-6 text-sm text-center leading-6 rounded-full text-white">
+              0
+            </div>
+          </Link>
         </li>
-        <li className="p-4 flex justify-between border-b border-pink-300 cursor-pointer hover:bg-pink-200">
-          <div className="">Once alarm</div>
-          <div className="bg-pink-500 w-6 h-6 text-sm text-center leading-6 rounded-full text-white">
-            0
-          </div>
+        <li>
+          <Link
+            href='/home/once-alarm'
+            className="p-4 flex justify-between border-b border-pink-300 cursor-pointer hover:bg-pink-200"
+          >
+            <div className="">Once alarm</div>
+            <div className="bg-pink-500 w-6 h-6 text-sm text-center leading-6 rounded-full text-white">
+              0
+            </div>
+          </Link>
         </li>
       </ul>
     </div>

@@ -24,3 +24,10 @@ export const getStatusApi = () => axios.get('/status');
 
 export const changeAutoMode = (params: { status: boolean; percent: number }) =>
 	axios.post('/auto', params);
+
+export const postDailyAlarm = (params: {
+	percent: number;
+	hours: number;
+	minutes: number;
+}) => axios.post('/daily_alarm', params);
+

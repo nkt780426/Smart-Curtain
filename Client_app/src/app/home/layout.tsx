@@ -24,10 +24,10 @@ type StatusType = {
 const defaultStatus: StatusType = {
   auto: {
     status: false,
-    percent: 0
+    percent: 20
   },
-  daily_alarm: [],
-  once_alarm: []
+  daily_alarm: [{ percent: 10, hours: 10, minutes: 10 }, { percent: 10, hours: 10, minutes: 10 }],
+  once_alarm: [{ percent: 10, specify_time: '2023-10-10T20:20:20Z' }]
 }
 
 export const StatusContext = createContext<any>({})
