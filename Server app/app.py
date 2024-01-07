@@ -666,7 +666,7 @@ class CancelAlarmResource(Resource):
     @api.response(401, 'User is not log in', error_model)
     @api.response(404, 'Not found job', error_model)
     @api.response(501, 'Esp32 disconnect to broker', error_model)
-    def delete(self):
+    def post(self):
         ''''Cancel alarm mode curtain'''
         current_user = get_jwt_identity()
         if current_user:
