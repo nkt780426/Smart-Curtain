@@ -2,8 +2,11 @@
 
 import { getStatusApi } from "@/common/api";
 import { Header } from "@/components/Header";
+import { useRouter } from "next/navigation";
 import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import io from 'socket.io-client'
+let socket
 
 type StatusType = {
   auto: {
@@ -29,7 +32,7 @@ const defaultStatus: StatusType = {
     percent: 0
   },
   daily_alarm: [],
-  once_alarm: [{ percent: 10, specify_time: '2023-10-10T20:20:20Z' }]
+  once_alarm: []
 }
 
 export const StatusContext = createContext<any>({})
@@ -52,8 +55,27 @@ export default function RootLayout({
         toast.error(err.response.data.msg || err.response.data.error || 'Try again')
       })
   }
+  const router = useRouter()
 
-  useEffect(() => getStatus, [])
+  const socketInitializer = async () => {
+    socket = io(process.env.NEXT_PUBLIC_API_URL || '')
+
+    socket.on('esp32_status', (data) => {
+      const res = JSON.parse(data).activate
+      if (res === false) {
+        router.push('/home/disconnect')
+      }
+    });
+
+    socket.on('auto_mode', (data) => {
+      getStatus()
+    });
+  }
+
+  useEffect(() => {
+    getStatus()
+    socketInitializer()
+  }, [])
   return (
     <main>
       <StatusContext.Provider value={{ status, setStatus, getStatus }}>

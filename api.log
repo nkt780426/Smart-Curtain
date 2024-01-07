@@ -213,3 +213,42 @@
 2024-01-07 20:52:54,116 - INFO - Username: 1 -- Response for POST "/daily_alarm": 201 {'status': 'true', 'job_id': '8f0c7d91102e4a0ab1b48e53b54f922f'}
 2024-01-07 20:52:54,234 - INFO - Username: 1 -- GET "/status"
 2024-01-07 20:52:54,321 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [{'username': '1', 'percent': 20, 'hours': 20, 'minutes': 1, 'job_id': 'c283bd8ebd2146049d0ca822e9e655b8'}, {'username': '1', 'percent': 30, 'hours': 20, 'minutes': 1, 'job_id': '8f0c7d91102e4a0ab1b48e53b54f922f'}], 'once_alarm': []}
+2024-01-07 21:58:24,495 - INFO - Username: 1 -- is logging in!
+2024-01-07 21:58:24,496 - INFO - Username: 1 -- logged in successfully!
+2024-01-07 21:58:26,607 - INFO - Username: 1 -- GET "/status"
+2024-01-07 21:58:26,607 - INFO - Username: 1 -- Response for GET "/status": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-07 21:59:06,947 - INFO - Username: 1 -- GET "/status"
+2024-01-07 21:59:07,011 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [{'username': '1', 'percent': 20, 'hours': 20, 'minutes': 1, 'job_id': 'c283bd8ebd2146049d0ca822e9e655b8'}, {'username': '1', 'percent': 30, 'hours': 20, 'minutes': 1, 'job_id': '8f0c7d91102e4a0ab1b48e53b54f922f'}], 'once_alarm': []}
+2024-01-07 21:59:51,471 - INFO - Username: 1 -- GET "/status"
+2024-01-07 21:59:51,532 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [{'username': '1', 'percent': 20, 'hours': 20, 'minutes': 1, 'job_id': 'c283bd8ebd2146049d0ca822e9e655b8'}, {'username': '1', 'percent': 30, 'hours': 20, 'minutes': 1, 'job_id': '8f0c7d91102e4a0ab1b48e53b54f922f'}], 'once_alarm': []}
+2024-01-07 22:10:19,125 - INFO - Username: 1 -- GET "/status"
+2024-01-07 22:10:19,187 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [{'username': '1', 'percent': 20, 'hours': 20, 'minutes': 1, 'job_id': 'c283bd8ebd2146049d0ca822e9e655b8'}, {'username': '1', 'percent': 30, 'hours': 20, 'minutes': 1, 'job_id': '8f0c7d91102e4a0ab1b48e53b54f922f'}], 'once_alarm': []}
+2024-01-07 22:10:26,188 - INFO - Username: 1 -- PUT "/auto" with payload {'status': True}
+2024-01-07 22:10:27,164 - INFO - Username: 1 -- PUT "/auto" with payload {'status': True}
+2024-01-07 22:10:27,987 - INFO - Username: 1 -- PUT "/auto" with payload {'status': True}
+2024-01-07 22:10:32,966 - INFO - Username: 1 -- GET "/status"
+2024-01-07 22:10:33,031 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [{'username': '1', 'percent': 20, 'hours': 20, 'minutes': 1, 'job_id': 'c283bd8ebd2146049d0ca822e9e655b8'}, {'username': '1', 'percent': 30, 'hours': 20, 'minutes': 1, 'job_id': '8f0c7d91102e4a0ab1b48e53b54f922f'}], 'once_alarm': []}
+2024-01-07 22:11:25,298 - INFO - Username: 1 -- GET "/status"
+2024-01-07 22:11:25,360 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [{'username': '1', 'percent': 20, 'hours': 20, 'minutes': 1, 'job_id': 'c283bd8ebd2146049d0ca822e9e655b8'}, {'username': '1', 'percent': 30, 'hours': 20, 'minutes': 1, 'job_id': '8f0c7d91102e4a0ab1b48e53b54f922f'}], 'once_alarm': []}
+2024-01-07 22:41:47,579 - INFO - Username: 1 -- is logging in!
+2024-01-07 22:41:47,590 - INFO - Username: 1 -- logged in successfully!
+2024-01-07 22:41:48,040 - INFO - Username: 1 -- GET "/status"
+2024-01-07 22:41:48,106 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [{'username': '1', 'percent': 20, 'hours': 20, 'minutes': 1, 'job_id': 'c283bd8ebd2146049d0ca822e9e655b8'}, {'username': '1', 'percent': 30, 'hours': 20, 'minutes': 1, 'job_id': '8f0c7d91102e4a0ab1b48e53b54f922f'}], 'once_alarm': []}
+2024-01-07 22:41:48,131 - INFO - Username: 1 -- GET "/status"
+2024-01-07 22:41:48,193 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [{'username': '1', 'percent': 20, 'hours': 20, 'minutes': 1, 'job_id': 'c283bd8ebd2146049d0ca822e9e655b8'}, {'username': '1', 'percent': 30, 'hours': 20, 'minutes': 1, 'job_id': '8f0c7d91102e4a0ab1b48e53b54f922f'}], 'once_alarm': []}
+2024-01-07 22:44:12,465 - INFO - Username: 1 -- GET "/status"
+2024-01-07 22:44:12,622 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [{'username': '1', 'percent': 20, 'hours': 20, 'minutes': 1, 'job_id': 'c283bd8ebd2146049d0ca822e9e655b8'}, {'username': '1', 'percent': 30, 'hours': 20, 'minutes': 1, 'job_id': '8f0c7d91102e4a0ab1b48e53b54f922f'}], 'once_alarm': []}
+2024-01-07 22:44:12,628 - INFO - Username: 1 -- GET "/status"
+2024-01-07 22:44:12,690 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [{'username': '1', 'percent': 20, 'hours': 20, 'minutes': 1, 'job_id': 'c283bd8ebd2146049d0ca822e9e655b8'}, {'username': '1', 'percent': 30, 'hours': 20, 'minutes': 1, 'job_id': '8f0c7d91102e4a0ab1b48e53b54f922f'}], 'once_alarm': []}
+2024-01-07 22:46:17,931 - INFO - Username: 1 -- GET "/status"
+2024-01-07 22:46:18,003 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [{'username': '1', 'percent': 20, 'hours': 20, 'minutes': 1, 'job_id': 'c283bd8ebd2146049d0ca822e9e655b8'}, {'username': '1', 'percent': 30, 'hours': 20, 'minutes': 1, 'job_id': '8f0c7d91102e4a0ab1b48e53b54f922f'}], 'once_alarm': []}
+2024-01-07 22:46:18,014 - INFO - Username: 1 -- GET "/status"
+2024-01-07 22:46:18,103 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [{'username': '1', 'percent': 20, 'hours': 20, 'minutes': 1, 'job_id': 'c283bd8ebd2146049d0ca822e9e655b8'}, {'username': '1', 'percent': 30, 'hours': 20, 'minutes': 1, 'job_id': '8f0c7d91102e4a0ab1b48e53b54f922f'}], 'once_alarm': []}
+2024-01-07 22:52:39,016 - INFO - Username: 1 -- GET "/status"
+2024-01-07 22:52:39,082 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [{'username': '1', 'percent': 20, 'hours': 20, 'minutes': 1, 'job_id': 'c283bd8ebd2146049d0ca822e9e655b8'}, {'username': '1', 'percent': 30, 'hours': 20, 'minutes': 1, 'job_id': '8f0c7d91102e4a0ab1b48e53b54f922f'}], 'once_alarm': []}
+2024-01-07 22:52:39,105 - INFO - Username: 1 -- GET "/status"
+2024-01-07 22:52:39,200 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [{'username': '1', 'percent': 20, 'hours': 20, 'minutes': 1, 'job_id': 'c283bd8ebd2146049d0ca822e9e655b8'}, {'username': '1', 'percent': 30, 'hours': 20, 'minutes': 1, 'job_id': '8f0c7d91102e4a0ab1b48e53b54f922f'}], 'once_alarm': []}
+2024-01-07 22:52:43,179 - INFO - Username: 1 -- GET "/status"
+2024-01-07 22:52:43,241 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [{'username': '1', 'percent': 20, 'hours': 20, 'minutes': 1, 'job_id': 'c283bd8ebd2146049d0ca822e9e655b8'}, {'username': '1', 'percent': 30, 'hours': 20, 'minutes': 1, 'job_id': '8f0c7d91102e4a0ab1b48e53b54f922f'}], 'once_alarm': []}
+2024-01-07 22:52:43,264 - INFO - Username: 1 -- GET "/status"
+2024-01-07 22:52:43,322 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [{'username': '1', 'percent': 20, 'hours': 20, 'minutes': 1, 'job_id': 'c283bd8ebd2146049d0ca822e9e655b8'}, {'username': '1', 'percent': 30, 'hours': 20, 'minutes': 1, 'job_id': '8f0c7d91102e4a0ab1b48e53b54f922f'}], 'once_alarm': []}

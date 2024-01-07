@@ -677,3 +677,88 @@
     "activate": false
 }
 2024-01-07 20:58:04,411 - CRITICAL - Esp32 disconect to the broker!
+2024-01-07 21:00:05,017 - INFO - Connected with result code 0
+2024-01-07 21:00:05,286 - INFO - Subscription id 1 granted with qos (2,).
+2024-01-07 21:00:05,617 - INFO - Subscription id 2 granted with qos (1,).
+2024-01-07 21:00:05,618 - INFO - Subscription id 3 granted with qos (2,).
+2024-01-07 21:00:05,618 - INFO - Subscription id 4 granted with qos (2,).
+2024-01-07 21:00:05,925 - INFO - Received Message_ID: 51 -- on topic esp32_status: {
+    "activate": false
+}
+2024-01-07 21:00:05,925 - CRITICAL - Esp32 disconect to the broker!
+2024-01-07 21:00:07,342 - INFO - Connected with result code 0
+2024-01-07 21:00:07,624 - INFO - Subscription id 1 granted with qos (2,).
+2024-01-07 21:00:07,903 - INFO - Subscription id 2 granted with qos (1,).
+2024-01-07 21:00:07,903 - INFO - Subscription id 3 granted with qos (2,).
+2024-01-07 21:00:07,905 - INFO - Subscription id 4 granted with qos (2,).
+2024-01-07 21:00:08,180 - INFO - Received Message_ID: 51 -- on topic esp32_status: {
+    "activate": false
+}
+2024-01-07 21:00:08,180 - CRITICAL - Esp32 disconect to the broker!
+2024-01-07 21:04:32,752 - INFO - Connected with result code 0
+2024-01-07 21:04:33,079 - INFO - Subscription id 1 granted with qos (2,).
+2024-01-07 21:04:33,387 - INFO - Subscription id 2 granted with qos (1,).
+2024-01-07 21:04:33,388 - INFO - Subscription id 3 granted with qos (2,).
+2024-01-07 21:04:33,388 - INFO - Subscription id 4 granted with qos (2,).
+2024-01-07 21:04:33,662 - INFO - Received Message_ID: 51 -- on topic esp32_status: {
+    "activate": false
+}
+2024-01-07 21:04:33,662 - CRITICAL - Esp32 disconect to the broker!
+2024-01-07 21:04:35,124 - INFO - Connected with result code 0
+2024-01-07 21:04:35,405 - INFO - Subscription id 1 granted with qos (2,).
+2024-01-07 21:04:35,673 - INFO - Subscription id 2 granted with qos (1,).
+2024-01-07 21:04:35,674 - INFO - Subscription id 3 granted with qos (2,).
+2024-01-07 21:04:35,676 - INFO - Subscription id 4 granted with qos (2,).
+2024-01-07 21:04:35,946 - INFO - Received Message_ID: 51 -- on topic esp32_status: {
+    "activate": false
+}
+2024-01-07 21:04:35,946 - CRITICAL - Esp32 disconect to the broker!
+2024-01-07 21:57:33,116 - INFO - Connected with result code 0
+2024-01-07 21:57:33,398 - INFO - Subscription id 1 granted with qos (2,).
+2024-01-07 21:57:33,666 - INFO - Subscription id 2 granted with qos (1,).
+2024-01-07 21:57:33,667 - INFO - Subscription id 3 granted with qos (2,).
+2024-01-07 21:57:33,667 - INFO - Subscription id 4 granted with qos (2,).
+2024-01-07 21:57:33,928 - INFO - Received Message_ID: 51 -- on topic esp32_status: {
+    "activate": false
+}
+2024-01-07 21:57:33,930 - CRITICAL - Esp32 disconect to the broker!
+2024-01-07 21:57:35,923 - INFO - Connected with result code 0
+2024-01-07 21:57:36,205 - INFO - Subscription id 1 granted with qos (2,).
+2024-01-07 21:57:36,454 - INFO - Subscription id 2 granted with qos (1,).
+2024-01-07 21:57:36,455 - INFO - Subscription id 3 granted with qos (2,).
+2024-01-07 21:57:36,457 - INFO - Subscription id 4 granted with qos (2,).
+2024-01-07 21:57:36,718 - INFO - Received Message_ID: 51 -- on topic esp32_status: {
+    "activate": false
+}
+2024-01-07 21:57:36,719 - CRITICAL - Esp32 disconect to the broker!
+2024-01-07 21:59:02,917 - INFO - Received Message_ID: 101 -- on topic esp32_status: {
+  "activate": true
+}
+2024-01-07 21:59:02,918 - CRITICAL - Esp32 successfully connected to the broker!
+2024-01-07 21:59:02,920 - INFO - Received Message_ID: 101 -- on topic esp32_status: {
+  "activate": true
+}
+2024-01-07 21:59:02,920 - CRITICAL - Esp32 successfully connected to the broker!
+2024-01-07 22:07:32,486 - INFO - Received Message_ID: 151 -- on topic inform: {
+		"indoor": 10,
+		"outdoor": 20,
+		"ledState": 30,
+		"percent": 50
+	}
+2024-01-07 22:07:32,486 - INFO - Begin sent message has id: 151 to websocket name 'inform'!
+2024-01-07 22:07:32,487 - INFO - Success sent message has id: 151 to websocket name 'inform'!
+2024-01-07 22:07:32,488 - INFO - Begin save inform message has id: 151 into collection "inform"!
+2024-01-07 22:07:32,487 - INFO - Received Message_ID: 151 -- on topic inform: {
+		"indoor": 10,
+		"outdoor": 20,
+		"ledState": 30,
+		"percent": 50
+	}
+2024-01-07 22:07:32,490 - INFO - Begin sent message has id: 151 to websocket name 'inform'!
+2024-01-07 22:07:32,491 - INFO - Success sent message has id: 151 to websocket name 'inform'!
+2024-01-07 22:07:32,492 - INFO - Begin save inform message has id: 151 into collection "inform"!
+2024-01-07 22:07:32,529 - INFO - Success save message has id: 151 into collection "inform"
+2024-01-07 22:07:33,062 - INFO - Success save message has id: 151 into collection "inform"
+2024-01-07 22:10:26,192 - INFO - Send message has correlation data : 81e2eb12-863a-406c-88e5-61c947f98309 -- payload: {"status": true, "percent": null, "correlation_data": "81e2eb12-863a-406c-88e5-61c947f98309"}
+2024-01-07 22:10:27,173 - INFO - Send message has correlation data : 30cb16fc-9971-4b7d-afb9-e341798ca550 -- payload: {"status": true, "percent": null, "correlation_data": "30cb16fc-9971-4b7d-afb9-e341798ca550"}
+2024-01-07 22:10:27,987 - INFO - Send message has correlation data : d2f59d76-8927-433f-b702-ccffac718e27 -- payload: {"status": true, "percent": null, "correlation_data": "d2f59d76-8927-433f-b702-ccffac718e27"}
