@@ -31,3 +31,8 @@ export const postDailyAlarm = (params: {
 	minutes: number;
 }) => axios.post('/daily_alarm', params);
 
+export const postOnceAlarm = (params: {
+	percent: number;
+	specify_time: string;
+}) => axios.post('/once_alarm', params);
+

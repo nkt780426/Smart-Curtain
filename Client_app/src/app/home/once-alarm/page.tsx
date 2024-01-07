@@ -4,7 +4,7 @@ import Input from "@/components/base/Input";
 import { MinusIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import { useContext, useEffect, useState } from "react";
 import { StatusContext } from "../layout";
-import { postDailyAlarm } from "@/common/api";
+import { postDailyAlarm, postOnceAlarm } from "@/common/api";
 import { toast } from "react-toastify";
 import TimePicker from "react-time-picker";
 import 'react-time-picker/dist/TimePicker.css';
@@ -44,12 +44,11 @@ const DailyAlarm = () => {
   } = useForm({ resolver: yupResolver(OnceAlarmSchema), defaultValues: { specify_time: new Date() } })
 
   const onSubmit = (data: any) => {
-    postDailyAlarm({
+    postOnceAlarm({
       percent: data.percent,
-      hours: Number(data.time.split(':')[0]),
-      minutes: Number(data.time.split(':')[1]),
+      specify_time: new Date(data.specify_time).toISOString()
     }).then(res => {
-      setTimeout(() => getStatus(), 100)
+      getStatus()
     })
       .catch(err => {
         console.log(err)
@@ -75,7 +74,13 @@ const DailyAlarm = () => {
         <Controller
           name="specify_time"
           control={control}
-          render={({ field }) => <DatePicker />}
+          render={({ field }) => <DatePicker
+            onChange={(e) => field.onChange(e)}
+            selected={field.value}
+            // locale={'vi'}
+            showTimeInput
+            dateFormat='dd/MM/yyyy h:mm aa'
+          />}
         />
         <ErrorText>{errors.specify_time?.message}</ErrorText>
         <div className="text-sm">Percent</div>
@@ -99,12 +104,16 @@ const DailyAlarm = () => {
         </div>
       </div>}
     <ul>
-      {status.daily_alarm.map((e: any, id: number) => <li key={id}>
-        <span>{e.hours}:{e.minutes}</span>
-        <span>{e.percent}%</span>
+      {status.once_alarm.map((e: any, id: number) => <li key={id} className='flex justify-between w-full text-lg'>
+        <div className="font-semibold">{
+          new Date(e.specify_time).toDateString() +
+          new Date(e.specify_time).toTimeString()}</div>
+        <div className="flex gap-10 my-1">
+          <div>{e.percent}%</div>
         <button>
           <MinusIcon className="text-pink-500 w-6 h-6" />
         </button>
+        </div>
       </li>)}
     </ul>
   </div>;
