@@ -141,3 +141,51 @@
 2024-01-07 15:57:47,378 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
 2024-01-07 16:00:46,554 - INFO - Username: 1 -- GET "/status"
 2024-01-07 16:00:46,764 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 17:45:26,941 - INFO - Username: 1 -- is logging in!
+2024-01-07 17:45:26,942 - INFO - Username: 1 -- logged in successfully!
+2024-01-07 17:45:28,785 - INFO - Username: 1 -- GET "/status"
+2024-01-07 17:45:28,785 - INFO - Username: 1 -- Response for GET "/status": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-07 17:45:53,552 - INFO - Username: 1 -- GET "/status"
+2024-01-07 17:45:53,552 - INFO - Username: 1 -- Response for GET "/status": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-07 17:45:57,334 - INFO - Username: 1 -- GET "/status"
+2024-01-07 17:45:57,334 - INFO - Username: 1 -- Response for GET "/status": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-07 17:46:04,779 - INFO - Username: 1 -- GET "/status"
+2024-01-07 17:46:04,783 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 17:49:01,252 - INFO - Username: 1 -- GET "/status"
+2024-01-07 17:49:01,252 - INFO - Username: 1 -- Response for GET "/status": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-07 17:50:24,259 - INFO - Username: 1 -- GET "/status"
+2024-01-07 17:50:24,260 - INFO - Username: 1 -- Response for GET "/status": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-07 17:52:33,741 - INFO - Username: 1 -- GET "/status"
+2024-01-07 17:52:33,742 - INFO - Username: 1 -- Response for GET "/status": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-07 17:52:51,640 - INFO - Username: 1 -- GET "/status"
+2024-01-07 17:52:51,654 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 17:53:01,413 - INFO - Username: 1 -- GET "/status"
+2024-01-07 17:53:01,416 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 17:53:08,512 - INFO - Username: 1 -- GET "/status"
+2024-01-07 17:53:08,515 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 17:54:29,698 - INFO - Username: 1 -- GET "/status"
+2024-01-07 17:54:29,701 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 17:54:50,659 - INFO - Username: 1 -- GET "/status"
+2024-01-07 17:54:50,664 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 17:56:38,332 - INFO - Username: 1 -- GET "/status"
+2024-01-07 17:56:38,336 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 17:59:21,484 - INFO - Username: 1 -- GET "/status"
+2024-01-07 17:59:21,487 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 17:59:49,425 - INFO - Username: 1 -- GET "/status"
+2024-01-07 17:59:49,429 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 18:00:05,751 - INFO - Username: 1 -- GET "/status"
+2024-01-07 18:00:05,754 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 18:01:57,218 - INFO - Username: 1 -- GET "/status"
+2024-01-07 18:01:57,221 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 18:03:59,768 - INFO - Username: 1 -- POST "/once_alarm" with payload {'percent': 0, 'specify_time': '2024-02-12T17:05:00.000Z'}
+2024-01-07 18:03:59,769 - INFO - Username: 1 -- Response for POST "/once_alarm": 201 {'status': 'true', 'job_id': "module 'datetime' has no attribute 'fromisoformat'"}
+2024-01-07 18:03:59,783 - INFO - Username: 1 -- GET "/status"
+2024-01-07 18:03:59,786 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 18:05:36,646 - INFO - Username: 1 -- GET "/status"
+2024-01-07 18:05:36,648 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 18:08:29,017 - INFO - Username: 1 -- GET "/status"
+2024-01-07 18:08:29,021 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 18:08:55,431 - INFO - Username: 1 -- GET "/status"
+2024-01-07 18:08:55,434 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 18:09:09,513 - INFO - Username: 1 -- GET "/status"
+2024-01-07 18:09:09,516 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
