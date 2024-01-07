@@ -38,3 +38,9 @@
 2024-01-07 19:42:08,967 - INFO - Username: string -- Response for GET "/status": 501 {'error': 'Esp32 disconnect to broker!'}
 2024-01-07 19:42:13,918 - INFO - Username: string -- GET "/status"
 2024-01-07 19:42:13,924 - INFO - Username: string -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [{'_id': ObjectId('659a928837ace2b16599bc57'), 'username': 'string', 'percent': 45, 'hours': 7, 'minutes': 45, 'job_id': 'b89d21236923421a8669cf099b99f898'}], 'once_alarm': []}
+2024-01-08 01:43:49,387 - INFO - Username: string -- is logging in!
+2024-01-08 01:43:49,388 - INFO - Username: string -- logged in successfully!
+2024-01-08 01:44:06,789 - INFO - Username: string -- is logging out!
+2024-01-08 01:46:23,587 - INFO - Username: string -- is logging out!
+2024-01-08 01:47:49,928 - INFO - Username: string -- is logging out!
+2024-01-08 01:47:49,929 - INFO - Username: string -- Successfully logged out!
