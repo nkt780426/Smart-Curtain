@@ -260,6 +260,7 @@ class LogoutResource(Resource):
             return {"error": "User is not logged in"}, 401
 
 from werkzeug.security import generate_password_hash
+from config.app_config import AppConfig
 
 @api.route('/register')
 class RegisterResource(Resource):
@@ -272,6 +273,7 @@ class RegisterResource(Resource):
         data = request.get_json()
         username = data.get('username')
         password = data.get('password')
+        secret_curtain_code = data.get('secret_curtain_code')
         logger_api.info(f'Creating account for username: {username}.')
 
         # Kiểm tra xem tên người dùng đã tồn tại chưa
@@ -279,7 +281,11 @@ class RegisterResource(Resource):
         if existing_user:
             logger_api.info(f'Failed to register account for username: {username} -- username already exists.')
             return {"error": "Username already exists"}, 401
-
+        
+        if secret_curtain_code != AppConfig.SECRET_CURTAIN_CODE:
+            logger_api.info(f'Failed to register account for username: {username} -- Invalid curtain code.')
+            return {"error": "Invalid curtain code"}, 401
+        
         # Hash mật khẩu trước khi lưu vào database
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
 
@@ -291,6 +297,7 @@ class RegisterResource(Resource):
 
         logger_api.info(f'Successfully create account for username: {username}!')
         return response, 201
+
 
 from apscheduler.schedulers.background import BackgroundScheduler
 import datetime
@@ -454,8 +461,10 @@ def wait_for_auto_response(has_response, correlation_data):
 
 # ---------------------  Alarm and handle curtain api -------------------------------------------
 
+once_job_ids = []
+
 # Mỗi khi đến giờ publish 1 message đến esp32
-def send_alarm_message_to_esp32(percent):
+def send_alarm_message_to_esp32(percent, type):
     # Tạo message gửi đi esp32
     message = {}
     message['percent'] = percent
@@ -479,7 +488,10 @@ def send_alarm_message_to_esp32(percent):
     global alarm_responses
     socketio.emit('auto_mode', json.dumps({'status': alarm_responses[correlation_data].get('auto_status')}))
     del alarm_responses[correlation_data]
-
+    if type == "once":
+        global once_job_ids
+        
+        pass
 
 # đợi response từ broker
 def wait_for_alarm_response(has_response, correlation_data):
@@ -541,7 +553,8 @@ def create_once_alarm(username, percent, time):
         
         trigger = DateTrigger(run_date=datetime_obj, timezone=vn_timezone)
         job = scheduler.add_job(send_alarm_message_to_esp32, args=[percent], trigger=trigger)
-
+        global once_job_ids
+        once_job_ids.append(job.id)
         alarm_data = {
                 "username": username,
                 "percent": percent,
