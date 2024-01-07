@@ -129,7 +129,7 @@ def handle_alarm_response_messages(message):
         alarm_response = json.loads(payload)
         correlation_data = alarm_response['correlation_data']
         global alarm_responses
-        alarm_responses[correlation_data] = alarm_response['status']
+        alarm_responses[correlation_data] = {'status': alarm_response['status'], 'auto_status': alarm_response['auto_status']}
         logger_broker.info(f'Response for request message has correlation_data: {correlation_data} -- {payload}')
 
     except Exception as e:
@@ -278,7 +278,7 @@ class RegisterResource(Resource):
         existing_user = users_collection.find_one({'username': username})
         if existing_user:
             logger_api.info(f'Failed to register account for username: {username} -- username already exists.')
-            return {"error": "Username already exists"}, 400
+            return {"error": "Username already exists"}, 401
 
         # Hash mật khẩu trước khi lưu vào database
         hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
@@ -339,7 +339,7 @@ status_model = api.model('status',{
 
 @api.route('/status')
 class StatusResource(Resource):
-    @jwt_required(optional=True)
+    @jwt_required()
     @api.doc('get status curtain mode')
     @api.response(200, 'Success', status_model)
     @api.response(401, 'User is not loggeg in', error_model)
@@ -467,7 +467,9 @@ def send_alarm_message_to_esp32(percent):
 
     # Sau khi esp32 phản hồi
     global alarm_responses
+    socketio.emit('auto_mode', json.dumps({'status': alarm_responses[correlation_data].get('auto_status')}))
     del alarm_responses[correlation_data]
+
 
 # đợi response từ broker
 def wait_for_alarm_response(has_response, correlation_data):
@@ -629,7 +631,7 @@ class CancelAlarmResource(Resource):
                     global daily_alarm_collections
                     result = delete_job(current_user, data['job_id'], daily_alarm_collections)
 
-                if data['type'] == 'daily':
+                if data['type'] == 'once':
                     global once_alarm_collections
                     result = delete_job(current_user, data['job_id'], once_alarm_collections)
                 

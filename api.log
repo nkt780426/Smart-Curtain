@@ -2,3 +2,10 @@
 2024-01-06 23:01:22,232 - INFO - Username: 1 -- logged in successfully!
 2024-01-06 23:01:23,839 - INFO - Username: 1 -- is logging in!
 2024-01-06 23:01:23,839 - INFO - Username: 1 -- logged in successfully!
+2024-01-07 11:25:32,093 - INFO - Creating account for username: string.
+2024-01-07 11:25:32,871 - INFO - Successfully create account for username: string!
+2024-01-07 11:25:39,063 - INFO - Username: string -- is logging in!
+2024-01-07 11:25:39,064 - INFO - Username: string -- logged in successfully!
+2024-01-07 11:26:12,389 - INFO - Username: string -- POST "/auto" with payload {'status': True, 'percent': 0}
+2024-01-07 11:26:12,389 - INFO - Username: string -- Response for POST "/auto": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-07 11:30:02,872 - INFO - Username: string -- POST "/auto" with payload {'status': True, 'percent': 0}
