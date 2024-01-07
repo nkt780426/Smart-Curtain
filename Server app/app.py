@@ -525,24 +525,35 @@ def create_daily_alarm(username, percent, hours, minutes):
 
 from apscheduler.triggers.date import DateTrigger
 import pytz
-from dateutil import parser
+from datetime import datetime
 
 once_alarm_collections = db['once_alarm_collections']
-def create_once_alarm(username, percent, iso_time):
+def create_once_alarm(username, percent, time):
     try:
-        time_utc = parser.isoparse(iso_time)
-        time_vietnam = time_utc.replace(tzinfo=pytz.utc).astimezone(pytz.timezone('Asia/Ho_Chi_Minh'))
-        if time_vietnam <= datetime.now(pytz.timezone('Asia/Ho_Chi_Minh')):
+        # Chuyển đổi chuỗi thời gian thành đối tượng datetime
+        datetime_obj = datetime.strptime(time, "%Y-%m-%d-%H-%M")
+        
+        # Xác định múi giờ cho Việt Nam
+        vn_timezone = pytz.timezone('Asia/Ho_Chi_Minh')
+        
+        # Chuyển đổi thời gian đã nhập và thời gian hiện tại về múi giờ của Việt Nam
+        datetime_obj = vn_timezone.localize(datetime_obj)
+        current_time_vn = datetime.now(vn_timezone)
+        
+        # Lấy thời gian hiện tại theo múi giờ của Việt Nam
+        current_time = datetime.now(vn_timezone)
+        # So sánh thời gian đã qua
+        if datetime_obj <= current_time_vn:
             raise ValueError("Error")
         
-        trigger = DateTrigger(run_date=time_vietnam)
+        trigger = DateTrigger(run_date=datetime_obj, timezone=vn_timezone)
         job = scheduler.add_job(send_alarm_message_to_esp32, args=[percent], trigger=trigger)
 
         alarm_data = {
                 "username": username,
                 "percent": percent,
-                "iso_time": iso_time,
-                "job_id": job.id  # Convert ObjectId sang str để lưu vào MongoDB
+                "iso_time": time,
+                "job_id": job.id
         }
         once_alarm_collections.insert_one(alarm_data)
         return job.id

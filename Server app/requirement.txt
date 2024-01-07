@@ -3,3 +3,4 @@ pip install flask-socketio apscheduler
 pip install python-decouple
 pip install -U flask-cors
 pip install python-dateutil
+pip install python-dotenv
