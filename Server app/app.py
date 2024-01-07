@@ -339,7 +339,7 @@ status_model = api.model('status',{
 
 @api.route('/status')
 class StatusResource(Resource):
-    @jwt_required()
+    @jwt_required(optional=True)
     @api.doc('get status curtain mode')
     @api.response(200, 'Success', status_model)
     @api.response(401, 'User is not loggeg in', error_model)
@@ -356,11 +356,21 @@ class StatusResource(Resource):
                 global auto_mode, daily_alarm_collections, once_alarm_collections
                 auto_status = {'status': auto_mode}
 
-                daily_alarms_cursor = daily_alarm_collections.find({"username": current_user})
-                daily_alarms = [daily_alarm for daily_alarm in daily_alarms_cursor]
+                query = {
+                    "username": current_user
+                }
 
-                once_alarms_cursor = once_alarm_collections.find({"username": current_user})
-                once_alarms = [once_alarm for once_alarm in once_alarms_cursor]
+                daily_alarms_cursor = daily_alarm_collections.find(query)
+                daily_alarms = [
+                    {key: value for key, value in daily_alarm.items() if key != '_id'}
+                    for daily_alarm in daily_alarms_cursor
+                ]
+
+                once_alarms_cursor = once_alarm_collections.find(query)
+                once_alarms = [
+                    {key: value for key, value in once_alarm.items() if key != '_id'}
+                    for once_alarm in once_alarms_cursor
+                ]
 
                 response = {'auto': auto_status, 'daily_alarm': daily_alarms, 'once_alarm': once_alarms}
                 logger_api.info(f'Username: {current_user} -- Response for GET "/status": 200 {response}')
@@ -388,12 +398,12 @@ class AutoModeResource(Resource):
     @api.response(201, 'Success', result_model)
     @api.response(401, 'User is not loggeg in', error_model)
     @api.response(501, 'Esp32 disconnect to broker', error_model)
-    def post(self):
+    def put(self):
         ''''Adjust auto mode and handle curtain'''
         current_user = get_jwt_identity()
         if current_user:
             data = request.get_json()
-            logger_api.info(f'Username: {current_user} -- POST "/auto" with payload {data}')
+            logger_api.info(f'Username: {current_user} -- PUT "/auto" with payload {data}')
             global esp32_status
 
             if esp32_status:
@@ -423,15 +433,15 @@ class AutoModeResource(Resource):
                 status = auto_responses[correlation_data]
                 del auto_responses[correlation_data]
                 response = {'status': status}
-                logger_api.info(f'Username: {current_user} -- Response for POST "/auto": 201 {response}')
+                logger_api.info(f'Username: {current_user} -- Response for PUT "/auto": 201 {response}')
                 return response, 201
             
             response = {'error': "Esp32 disconnect to broker!"}
-            logger_api.info(f'Username: {current_user} -- Response for POST "/auto": 501 {response}')
+            logger_api.info(f'Username: {current_user} -- Response for PUT "/auto": 501 {response}')
             return response, 501
         else:
             response = {"error": "User is not logged in"}
-            logger_api.info(f'Username: {current_user} -- Response for POST "/auto": 401 {response}')
+            logger_api.info(f'Username: {current_user} -- Response for PUT "/auto": 401 {response}')
             return response, 401
 
 # đợi response từ mqtt
@@ -489,13 +499,17 @@ def create_daily_alarm(username, percent, hours, minutes):
         cron_expression = f"{minutes} {hours} * * *"
         trigger = CronTrigger.from_crontab(cron_expression)
         job = scheduler.add_job(send_alarm_message_to_esp32, args=[percent], trigger=trigger)
-
+        print(username)
+        print(percent)
+        print(hours)
+        print(minutes)
+        print(job.id)
         alarm_data = {
                 "username": username,
                 "percent": percent,
                 "hours": hours,
                 "minutes": minutes,
-                "job_id": str(job.id)  # Convert ObjectId sang str để lưu vào MongoDB
+                "job_id": job.id  # Convert ObjectId sang str để lưu vào MongoDB
         }
         daily_alarm_collections.insert_one(alarm_data)
         return job.id
@@ -504,26 +518,29 @@ def create_daily_alarm(username, percent, hours, minutes):
 
 from apscheduler.triggers.date import DateTrigger
 import pytz
+from dateutil import parser
 
 once_alarm_collections = db['once_alarm_collections']
 def create_once_alarm(username, percent, iso_time):
     try:
-        time_utc = datetime.fromisoformat(iso_time)
+        time_utc = parser.isoparse(iso_time)
         time_vietnam = time_utc.replace(tzinfo=pytz.utc).astimezone(pytz.timezone('Asia/Ho_Chi_Minh'))
-
+        if time_vietnam <= datetime.now(pytz.timezone('Asia/Ho_Chi_Minh')):
+            raise ValueError("Error")
+        
         trigger = DateTrigger(run_date=time_vietnam)
         job = scheduler.add_job(send_alarm_message_to_esp32, args=[percent], trigger=trigger)
 
         alarm_data = {
                 "username": username,
                 "percent": percent,
-                "iso_time": str(iso_time),
-                "job_id": str(job.id)  # Convert ObjectId sang str để lưu vào MongoDB
+                "iso_time": iso_time,
+                "job_id": job.id  # Convert ObjectId sang str để lưu vào MongoDB
         }
         once_alarm_collections.insert_one(alarm_data)
         return job.id
     except Exception as e:
-        return str(e)
+        return "Error"
 
 @api.route('/daily_alarm')
 class DailyAlarmResource(Resource):
@@ -581,7 +598,8 @@ class OnceAlarmResource(Resource):
             if esp32_status:
                 try:
                     job_id=create_once_alarm(current_user, data['percent'],data['specify_time'])
-
+                    if job_id == "Error":
+                        raise ValueError("Error")
                 except Exception as e:
                     response = {'error': "Wrong date format"}
                     logger_api.info(f'Username: {current_user} -- Response for POST "/once_alarm": 400 {response}')
@@ -600,7 +618,14 @@ class OnceAlarmResource(Resource):
             return response, 401
 
 def delete_job(username, job_id, collections):
-    alarm_info = collections.find_one({"job_id": job_id, "username": username})
+    print(f"Bắt đầu xóa job: username ={username}, job_id ={job_id}")
+    query = {
+        "username": username,
+        "job_id": job_id 
+    }
+    alarm_info = collections.find_one(query)
+    print("Bắt đầu vào if")
+    print(alarm_info)
     if alarm_info:
         # Báo thức được tìm thấy, tiến hành xóa job và tài liệu trong MongoDB
         scheduler.remove_job(job_id)
@@ -622,14 +647,16 @@ class CancelAlarmResource(Resource):
         current_user = get_jwt_identity()
         if current_user:
             data = request.get_json()
-            logger_api.info(f'Username: {current_user} -- POST "/cancel_alarm" with payload {data}')
+            logger_api.info(f'Username: {current_user} -- DELETE "/cancel_alarm" with payload {data}')
             global esp32_status
 
             if esp32_status:
                 result = None
                 if data['type'] == 'daily':
                     global daily_alarm_collections
+                    print("Bắt đầu delete_job")
                     result = delete_job(current_user, data['job_id'], daily_alarm_collections)
+                    print(f"Kết thúc xóa job, result = {result}")
 
                 if data['type'] == 'once':
                     global once_alarm_collections
@@ -637,19 +664,19 @@ class CancelAlarmResource(Resource):
                 
                 if result:
                     response = {'status': "true"}
-                    logger_api.info(f'Username: {current_user} -- Response for POST "/cancel_alarm": 201 {response}')
+                    logger_api.info(f'Username: {current_user} -- Response for DELETE "/cancel_alarm": 201 {response}')
                     return response, 201
                 
                 response = {'error': "Not found job!"}
-                logger_api.info(f'Username: {current_user} -- Response for POST "/cancel_alarm": 404 {response}')
+                logger_api.info(f'Username: {current_user} -- Response for DELETE "/cancel_alarm": 404 {response}')
                 return response, 404
             
             response = {'error': "Esp32 disconnect to broker!"}
-            logger_api.info(f'Username: {current_user} -- Response for POST "/cancel_alarm": 501 {response}')
+            logger_api.info(f'Username: {current_user} -- Response for DELETE "/cancel_alarm": 501 {response}')
             return response, 501
         
         response = {"error": "User is not logged in"}
-        logger_api.info(f'Username: {current_user} -- Response for POST "/cancel_alarm": 401 {response}')
+        logger_api.info(f'Username: {current_user} -- Response for DELETE "/cancel_alarm": 401 {response}')
         return response, 401
 
 #  -----------------------------------------------------------------------
