@@ -4,7 +4,7 @@ import { Bars3Icon } from "@heroicons/react/24/solid";
 import { useState, useContext } from "react";
 import { PinkButton } from "./base/Button";
 import clsx from "clsx";
-import { MinusIcon } from "@heroicons/react/24/outline";
+import { ArrowRightOnRectangleIcon, MinusIcon } from "@heroicons/react/24/outline";
 import { ChartBarSquareIcon } from "@heroicons/react/20/solid";
 import Switch from "./base/Switch";
 import "react-clock/dist/Clock.css";
@@ -12,10 +12,12 @@ import { StatusContext } from "@/app/home/layout";
 import Link from "next/link";
 import { changeAutoMode } from "@/common/api";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 export const Header = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { status, getStatus } = useContext(StatusContext)
+  const router = useRouter()
 
   return (
     <div className="px-4 py-2 bg-pink-300 relative">
@@ -88,6 +90,18 @@ export const Header = () => {
               {status.once_alarm.length || 0}
             </div>
           </Link>
+        </li>
+        <li>
+          <button
+            onClick={() => {
+              localStorage.removeItem('accessToken');
+              router.push('/login')
+            }}
+            className="p-4 flex justify-between border-b border-pink-300 cursor-pointer hover:bg-pink-200"
+          >
+            <div className="">Log out</div>
+            <ArrowRightOnRectangleIcon className="w-6 h-6 text-pink-500" />
+          </button>
         </li>
       </ul>
     </div>
