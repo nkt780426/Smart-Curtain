@@ -1,5 +1,7 @@
 /** @format */
 
+'use client';
+
 import axios from 'axios';
 
 axios.defaults.baseURL =
@@ -7,7 +9,7 @@ axios.defaults.baseURL =
 
 axios.interceptors.request.use((req) => {
 	if (localStorage.getItem('accessToken')) {
-		req.headers.authorization = localStorage.getItem('accessToken');
+		req.headers.authorization = `Bearer ${localStorage.getItem('accessToken')}`;
 	}
 	return req;
 });
@@ -17,3 +19,8 @@ export const logIn = (params: { username: string; password: string }) =>
 
 export const registerApi = (params: { username: string; password: string }) =>
 	axios.post('/register', params);
+
+export const getStatusApi = () => axios.get('/status');
+
+export const changeAutoMode = (params: { status: boolean; percent: number }) =>
+	axios.post('/auto', params);

@@ -1,4 +1,81 @@
-2024-01-06 23:01:22,232 - INFO - Username: 1 -- is logging in!
-2024-01-06 23:01:22,232 - INFO - Username: 1 -- logged in successfully!
-2024-01-06 23:01:23,839 - INFO - Username: 1 -- is logging in!
-2024-01-06 23:01:23,839 - INFO - Username: 1 -- logged in successfully!
+2024-01-07 13:48:00,552 - INFO - Username: 1 -- GET "/status"
+2024-01-07 13:48:01,459 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 13:48:07,199 - INFO - Username: 1 -- GET "/status"
+2024-01-07 13:48:07,279 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 14:27:33,408 - INFO - Username: None -- Response for GET "/status": 401 {'error': 'User is not logged in'}
+2024-01-07 14:28:25,128 - INFO - Creating account for username: string.
+2024-01-07 14:28:25,571 - INFO - Failed to register account for username: string -- username already exists.
+2024-01-07 14:28:35,290 - INFO - Username: string -- is logging in!
+2024-01-07 14:28:35,303 - INFO - Username: string -- logged in successfully!
+2024-01-07 14:29:21,017 - INFO - Username: None -- Response for GET "/status": 401 {'error': 'User is not logged in'}
+2024-01-07 14:29:32,824 - INFO - Username: string -- GET "/status"
+2024-01-07 14:29:32,825 - INFO - Username: string -- Response for GET "/status": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-07 14:30:49,473 - INFO - Username: string -- GET "/status"
+2024-01-07 14:30:49,544 - INFO - Username: string -- Response for GET "/status": 200 {'auto': {'status': True}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 14:31:09,415 - INFO - Username: string -- GET "/status"
+2024-01-07 14:31:09,483 - INFO - Username: string -- Response for GET "/status": 200 {'auto': {'status': True}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 14:31:11,784 - INFO - Username: string -- GET "/status"
+2024-01-07 14:31:11,852 - INFO - Username: string -- Response for GET "/status": 200 {'auto': {'status': True}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 14:33:49,432 - INFO - Username: None -- Response for GET "/status": 401 {'error': 'User is not logged in'}
+2024-01-07 14:34:18,725 - INFO - Username: 1 -- is logging in!
+2024-01-07 14:34:18,726 - INFO - Username: 1 -- logged in successfully!
+2024-01-07 14:34:19,036 - INFO - Username: 1 -- GET "/status"
+2024-01-07 14:34:19,037 - INFO - Username: 1 -- Response for GET "/status": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-07 14:34:20,040 - INFO - Username: 1 -- POST "/auto" with payload {'status': False, 'percent': 0}
+2024-01-07 14:34:20,041 - INFO - Username: 1 -- Response for POST "/auto": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-07 14:34:30,913 - INFO - Username: 1 -- GET "/status"
+2024-01-07 14:34:30,984 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': True}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 14:37:19,681 - INFO - Username: 1 -- is logging in!
+2024-01-07 14:37:19,683 - INFO - Username: 1 -- logged in successfully!
+2024-01-07 14:37:19,999 - INFO - Username: 1 -- GET "/status"
+2024-01-07 14:37:19,999 - INFO - Username: 1 -- Response for GET "/status": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-07 14:37:20,996 - INFO - Username: 1 -- POST "/auto" with payload {'status': False, 'percent': 0}
+2024-01-07 14:37:20,998 - INFO - Username: 1 -- Response for POST "/auto": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-07 14:37:32,539 - INFO - Username: 1 -- GET "/status"
+2024-01-07 14:37:32,604 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 14:40:13,150 - INFO - Username: 1 -- is logging in!
+2024-01-07 14:40:13,152 - INFO - Username: 1 -- logged in successfully!
+2024-01-07 14:40:13,555 - INFO - Username: 1 -- GET "/status"
+2024-01-07 14:40:13,621 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 14:47:34,053 - INFO - Username: 1 -- is logging in!
+2024-01-07 14:47:34,055 - INFO - Username: 1 -- logged in successfully!
+2024-01-07 14:47:34,157 - INFO - Username: 1 -- GET "/status"
+2024-01-07 14:47:34,157 - INFO - Username: 1 -- Response for GET "/status": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-07 14:47:39,375 - INFO - Username: 1 -- GET "/status"
+2024-01-07 14:47:39,375 - INFO - Username: 1 -- Response for GET "/status": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-07 14:47:44,313 - INFO - Username: 1 -- GET "/status"
+2024-01-07 14:47:44,313 - INFO - Username: 1 -- Response for GET "/status": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-07 14:47:48,663 - INFO - Username: 1 -- POST "/auto" with payload {'status': False, 'percent': 10}
+2024-01-07 14:47:48,663 - INFO - Username: 1 -- Response for POST "/auto": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-07 14:47:55,691 - INFO - Username: 1 -- GET "/status"
+2024-01-07 14:47:55,692 - INFO - Username: 1 -- Response for GET "/status": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-07 14:48:02,833 - INFO - Username: 1 -- GET "/status"
+2024-01-07 14:48:02,952 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 14:49:16,075 - INFO - Username: 1 -- is logging in!
+2024-01-07 14:49:16,085 - INFO - Username: 1 -- logged in successfully!
+2024-01-07 14:49:16,353 - INFO - Username: 1 -- GET "/status"
+2024-01-07 14:49:16,533 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 14:50:42,170 - INFO - Username: 1 -- is logging in!
+2024-01-07 14:50:42,172 - INFO - Username: 1 -- logged in successfully!
+2024-01-07 14:50:42,442 - INFO - Username: 1 -- GET "/status"
+2024-01-07 14:50:42,644 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 14:52:32,893 - INFO - Username: 1 -- is logging in!
+2024-01-07 14:52:32,895 - INFO - Username: 1 -- logged in successfully!
+2024-01-07 14:52:33,181 - INFO - Username: 1 -- GET "/status"
+2024-01-07 14:52:33,182 - INFO - Username: 1 -- Response for GET "/status": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-07 14:52:40,318 - INFO - Username: 1 -- GET "/status"
+2024-01-07 14:52:40,455 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 14:52:44,915 - INFO - Username: 1 -- POST "/auto" with payload {'status': False, 'percent': 10}
+2024-01-07 14:53:08,246 - INFO - Username: 1 -- GET "/status"
+2024-01-07 14:53:08,318 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 14:53:46,771 - INFO - Username: string -- POST "/auto" with payload {'percent': 0, 'status': False}
+2024-01-07 14:58:52,658 - INFO - Username: 1 -- GET "/status"
+2024-01-07 14:58:52,659 - INFO - Username: 1 -- Response for GET "/status": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-07 15:00:01,253 - INFO - Username: 1 -- GET "/status"
+2024-01-07 15:00:01,315 - INFO - Username: 1 -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [], 'once_alarm': []}
+2024-01-07 15:08:51,403 - INFO - Username: 1 -- GET "/status"
+2024-01-07 15:08:51,403 - INFO - Username: 1 -- Response for GET "/status": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-07 15:18:21,881 - INFO - Username: 1 -- GET "/status"
+2024-01-07 15:18:21,881 - INFO - Username: 1 -- Response for GET "/status": 501 {'error': 'Esp32 disconnect to broker!'}
+2024-01-07 15:18:33,533 - INFO - Username: 1 -- GET "/status"
+2024-01-07 15:18:33,533 - INFO - Username: 1 -- Response for GET "/status": 501 {'error': 'Esp32 disconnect to broker!'}

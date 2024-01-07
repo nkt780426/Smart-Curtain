@@ -1,10 +1,10 @@
 from flask import Flask
 from flask_mqtt import Mqtt
-# from flask_cors import CORS, cross_origin
+from flask_cors import CORS, cross_origin
 
 # Tạo các instance
 app = Flask(__name__)
-# CORS(app)
+CORS(app)
 
 # Cấu hình log
 import logging
@@ -339,7 +339,7 @@ status_model = api.model('status',{
 
 @api.route('/status')
 class StatusResource(Resource):
-    @jwt_required(optional=True)
+    @jwt_required()
     @api.doc('get status curtain mode')
     @api.response(200, 'Success', status_model)
     @api.response(401, 'User is not loggeg in', error_model)

@@ -20,3 +20,28 @@ body {
   color: black;
   background-color: white;
 }
+
+.react-time-picker {
+  display: flex;
+  flex: 1;
+}
+
+.react-time-picker__wrapper {
+  padding: 8px 8px 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db !important;
+}
+
+.react-time-picker--disabled {
+  background-color: #f3f4f6 !important;
+  color: #6b7280 !important;
+  border-radius: 8px;
+}
+input.react-time-picker__inputGroup__input {
+  outline: none !important;
+  border-radius: 4px;
+}
+span.react-time-picker__inputGroup__leadingZero {
+  position: relative !important;
+  z-index: 9 !important;
+}

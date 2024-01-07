@@ -10,7 +10,6 @@ import Input from '@/components/base/Input';
 import { ErrorText } from '@/components/base/ErrorText';
 import { PinkButton } from '@/components/base/Button';
 import { logIn } from '@/common/api';
-import Link from 'next/link';
 
 const LoginSchema = yup.object().shape({
   username: yup
