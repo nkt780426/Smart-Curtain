@@ -44,9 +44,12 @@ const DailyAlarm = () => {
   } = useForm({ resolver: yupResolver(OnceAlarmSchema), defaultValues: { specify_time: new Date() } })
 
   const onSubmit = (data: any) => {
+    const newdate = new Date(data.specify_time)
+    const tmp = `${newdate.getFullYear()}-${newdate.getMonth() + 1}-${newdate.getDate()}-${newdate.getHours()}-${newdate.getMinutes()}`
+
     postOnceAlarm({
       percent: data.percent,
-      specify_time: new Date(data.specify_time).toISOString()
+      specify_time: tmp
     }).then(res => {
       getStatus()
     })

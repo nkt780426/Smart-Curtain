@@ -92,7 +92,7 @@ export const Header = () => {
           </Link>
         </li>
         <li>
-          <button
+          <div
             onClick={() => {
               localStorage.removeItem('accessToken');
               router.push('/login')
@@ -101,7 +101,7 @@ export const Header = () => {
           >
             <div className="">Log out</div>
             <ArrowRightOnRectangleIcon className="w-6 h-6 text-pink-500" />
-          </button>
+          </div>
         </li>
       </ul>
     </div>
