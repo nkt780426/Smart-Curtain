@@ -20,7 +20,7 @@ const DailyAlarmSchema = yup.object().shape({
     .number()
     .required('Percent is required')
     .min(0, 'Min of percent is 0')
-    .max(100, 'Max of percent is 0'),
+    .max(100, 'Max of percent is 100'),
   time: yup
     .string()
     .required('Time is required')
@@ -93,7 +93,7 @@ const DailyAlarm = () => {
         <div className='flex gap-2 mt-3'>
           <PinkButton className='w-fit' onClick={handleSubmit(onSubmit)}>Add</PinkButton>
 
-          <button>
+          <button onClick={ }>
             <XMarkIcon
               className="text-pink-500 w-6 h-6 my-auto"
             />

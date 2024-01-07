@@ -1,21 +1,21 @@
 "use client";
 
 import { Bars3Icon } from "@heroicons/react/24/solid";
-import { useState, useRef, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import { PinkButton } from "./base/Button";
 import clsx from "clsx";
 import { MinusIcon } from "@heroicons/react/24/outline";
 import { ChartBarSquareIcon } from "@heroicons/react/20/solid";
 import Switch from "./base/Switch";
-import TimePicker from "react-time-picker";
 import "react-clock/dist/Clock.css";
 import { StatusContext } from "@/app/home/layout";
 import Link from "next/link";
+import { changeAutoMode } from "@/common/api";
+import { toast } from "react-toastify";
 
 export const Header = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [automation, setAutomation] = useState<boolean>(false);
-  const { status } = useContext(StatusContext)
+  const { status, getStatus } = useContext(StatusContext)
 
   return (
     <div className="px-4 py-2 bg-pink-300 relative">
@@ -55,8 +55,15 @@ export const Header = () => {
         <li className="p-4 flex justify-between border-b border-pink-300">
           <div className="">Automation</div>
           <Switch
-            checked={automation}
-            onChange={() => setAutomation((o) => !o)}
+            checked={status.auto.status}
+            onChange={() =>
+              changeAutoMode({ status: !status.auto.status })
+                .then(() => getStatus())
+                .catch(err => {
+                  console.log(err)
+                  toast.error(err.response.data.msg || err.response.data.error || 'Try again')
+                })
+            }
             name="automation"
           />
         </li>
@@ -67,7 +74,7 @@ export const Header = () => {
           >
             <div className="">Daily alarm</div>
             <div className="bg-pink-500 w-6 h-6 text-sm text-center leading-6 rounded-full text-white">
-              0
+              {status.daily_alarm.length || 0}
             </div>
           </Link>
         </li>
@@ -78,7 +85,7 @@ export const Header = () => {
           >
             <div className="">Once alarm</div>
             <div className="bg-pink-500 w-6 h-6 text-sm text-center leading-6 rounded-full text-white">
-              0
+              {status.once_alarm.length || 0}
             </div>
           </Link>
         </li>

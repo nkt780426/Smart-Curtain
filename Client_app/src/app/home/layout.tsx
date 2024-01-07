@@ -14,6 +14,8 @@ type StatusType = {
     percent: number;
     hours: number;
     minutes: number;
+    username: string;
+    job_id: string;
   }>
   once_alarm: Array<{
     percent: number;
@@ -24,9 +26,9 @@ type StatusType = {
 const defaultStatus: StatusType = {
   auto: {
     status: false,
-    percent: 20
+    percent: 0
   },
-  daily_alarm: [{ percent: 10, hours: 10, minutes: 10 }, { percent: 10, hours: 10, minutes: 10 }],
+  daily_alarm: [],
   once_alarm: [{ percent: 10, specify_time: '2023-10-10T20:20:20Z' }]
 }
 
@@ -42,7 +44,7 @@ export default function RootLayout({
     getStatusApi()
       .then(res => {
         if (res.data) {
-          // localStorage.setItem('accessToken', res.data.access_token)
+          setStatus(res.data)
         }
       })
       .catch(err => {

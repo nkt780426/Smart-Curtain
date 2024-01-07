@@ -68,7 +68,7 @@ def handle_message(client, userdata, message):
 import json
 from flask_socketio import SocketIO
 
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 from pymongo import MongoClient
 from config.database_config import DatabaseConfig

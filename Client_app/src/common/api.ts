@@ -22,8 +22,8 @@ export const registerApi = (params: { username: string; password: string }) =>
 
 export const getStatusApi = () => axios.get('/status');
 
-export const changeAutoMode = (params: { status: boolean; percent: number }) =>
-	axios.post('/auto', params);
+export const changeAutoMode = (params: { status: boolean; percent?: number }) =>
+	axios.put('/auto', params);
 
 export const postDailyAlarm = (params: {
 	percent: number;
@@ -35,4 +35,9 @@ export const postOnceAlarm = (params: {
 	percent: number;
 	specify_time: string;
 }) => axios.post('/once_alarm', params);
+
+export const cancelAlarm = (params: {
+	type: 'once' | 'daily';
+	job_id: string;
+}) => axios.delete('/once_alarm', params);
 
