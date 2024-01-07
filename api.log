@@ -1,4 +1,0 @@
-2024-01-07 19:45:47,014 - INFO - Username: string -- GET "/status"
-2024-01-07 19:45:47,014 - INFO - Username: string -- Response for GET "/status": 501 {'error': 'Esp32 disconnect to broker!'}
-2024-01-07 19:45:51,956 - INFO - Username: string -- GET "/status"
-2024-01-07 19:45:51,961 - INFO - Username: string -- Response for GET "/status": 200 {'auto': {'status': False}, 'daily_alarm': [{'_id': ObjectId('659a928837ace2b16599bc57'), 'username': 'string', 'percent': 45, 'hours': 7, 'minutes': 45, 'job_id': 'b89d21236923421a8669cf099b99f898'}], 'once_alarm': []}
