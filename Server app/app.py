@@ -218,7 +218,6 @@ class LoginResource(Resource):
 
             # Tạo access token và refresh token
             access_token = create_access_token(identity=username)
-            print(f"Access token: {access_token}")
 
             # Thiết lập cookies cho access token và refresh token trực tiếp trên response
             response = make_response(jsonify({"status": True, "access_token": access_token}), 200)
@@ -250,11 +249,12 @@ class LogoutResource(Resource):
                 blacklist.add(jti)  # Thêm token vào danh sách đen khi đăng xuất
     
             # Xóa cookie liên quan đến jwt
-            response = jsonify({'status': True})
+            response_data = {'status': True}
+            response = make_response(jsonify(response_data), 200)
             logger_api.info(f'Username: {current_user} -- Successfully logged out!')
 
             unset_jwt_cookies(response)
-            return response, 200
+            return response
         else:
             logger_api.info(f'Username: {current_user} -- is not logged in!')
             return {"error": "User is not logged in"}, 401
@@ -464,7 +464,7 @@ def wait_for_auto_response(has_response, correlation_data):
 once_job_ids = []
 
 # Mỗi khi đến giờ publish 1 message đến esp32
-def send_alarm_message_to_esp32(percent, type):
+def send_alarm_message_to_esp32(job_id, username, percent, type):
     # Tạo message gửi đi esp32
     message = {}
     message['percent'] = percent
@@ -489,9 +489,12 @@ def send_alarm_message_to_esp32(percent, type):
     socketio.emit('auto_mode', json.dumps({'status': alarm_responses[correlation_data].get('auto_status')}))
     del alarm_responses[correlation_data]
     if type == "once":
-        global once_job_ids
-        
-        pass
+        global once_alarm_collections
+        query ={
+            "job_id": job_id,
+            "username": username
+        }
+        once_alarm_collections.delete_one(query)
 
 # đợi response từ broker
 def wait_for_alarm_response(has_response, correlation_data):
@@ -510,21 +513,18 @@ def create_daily_alarm(username, percent, hours, minutes):
     if 0 <= hours <= 23 and 0 <= minutes <= 59:
         cron_expression = f"{minutes} {hours} * * *"
         trigger = CronTrigger.from_crontab(cron_expression)
-        job = scheduler.add_job(send_alarm_message_to_esp32, args=[percent], trigger=trigger)
-        print(username)
-        print(percent)
-        print(hours)
-        print(minutes)
-        print(job.id)
+        job_id = str(uuid.uuid4())
+        args_list = [job_id, username, percent, "daily"]
+        scheduler.add_job(send_alarm_message_to_esp32, args=args_list, id=job_id, trigger=trigger)
         alarm_data = {
-                "username": username,
-                "percent": percent,
-                "hours": hours,
-                "minutes": minutes,
-                "job_id": job.id  # Convert ObjectId sang str để lưu vào MongoDB
+            "username": username,
+            "percent": percent,
+            "hours": hours,
+            "minutes": minutes,
+            "job_id": job_id  # Convert ObjectId sang str để lưu vào MongoDB
         }
         daily_alarm_collections.insert_one(alarm_data)
-        return job.id
+        return job_id
     else:
         return None  # Hoặc có thể trả về một giá trị đặc biệt để biểu thị lỗi, ví dụ: -1
 
@@ -537,7 +537,6 @@ def create_once_alarm(username, percent, time):
     try:
         # Chuyển đổi chuỗi thời gian thành đối tượng datetime
         datetime_obj = datetime.strptime(time, "%Y-%m-%d-%H-%M")
-        
         # Xác định múi giờ cho Việt Nam
         vn_timezone = pytz.timezone('Asia/Ho_Chi_Minh')
         
@@ -545,24 +544,21 @@ def create_once_alarm(username, percent, time):
         datetime_obj = vn_timezone.localize(datetime_obj)
         current_time_vn = datetime.now(vn_timezone)
         
-        # Lấy thời gian hiện tại theo múi giờ của Việt Nam
-        current_time = datetime.now(vn_timezone)
         # So sánh thời gian đã qua
         if datetime_obj <= current_time_vn:
             raise ValueError("Error")
-        
         trigger = DateTrigger(run_date=datetime_obj, timezone=vn_timezone)
-        job = scheduler.add_job(send_alarm_message_to_esp32, args=[percent], trigger=trigger)
-        global once_job_ids
-        once_job_ids.append(job.id)
+        job_id = str(uuid.uuid4())
+        args_list = [job_id, username, percent , "once"]
+        scheduler.add_job(send_alarm_message_to_esp32, args=args_list, id=job_id, trigger=trigger)
         alarm_data = {
-                "username": username,
-                "percent": percent,
-                "iso_time": time,
-                "job_id": job.id
+            "username": username,
+            "percent": percent,
+            "iso_time": time,
+            "job_id": job_id
         }
         once_alarm_collections.insert_one(alarm_data)
-        return job.id
+        return job_id
     except Exception as e:
         return "Error"
 
@@ -642,14 +638,11 @@ class OnceAlarmResource(Resource):
             return response, 401
 
 def delete_job(username, job_id, collections):
-    print(f"Bắt đầu xóa job: username ={username}, job_id ={job_id}")
     query = {
         "username": username,
         "job_id": job_id 
     }
     alarm_info = collections.find_one(query)
-    print("Bắt đầu vào if")
-    print(alarm_info)
     if alarm_info:
         # Báo thức được tìm thấy, tiến hành xóa job và tài liệu trong MongoDB
         scheduler.remove_job(job_id)
@@ -678,9 +671,7 @@ class CancelAlarmResource(Resource):
                 result = None
                 if data['type'] == 'daily':
                     global daily_alarm_collections
-                    print("Bắt đầu delete_job")
                     result = delete_job(current_user, data['job_id'], daily_alarm_collections)
-                    print(f"Kết thúc xóa job, result = {result}")
 
                 if data['type'] == 'once':
                     global once_alarm_collections
