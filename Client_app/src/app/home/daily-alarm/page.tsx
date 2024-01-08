@@ -107,7 +107,10 @@ const DailyAlarm = () => {
         <div className="flex gap-10 my-1">
           <div>{e.percent}%</div>
           <button onClick={() => {
-            cancelAlarm()
+            cancelAlarm({
+              type: 'daily',
+              job_id: e.job_id
+            })
               .then(res => {
                 setTimeout(() => getStatus(), 100)
                 setIsAdd(false)

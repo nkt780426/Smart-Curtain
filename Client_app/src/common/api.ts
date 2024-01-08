@@ -36,8 +36,6 @@ export const postOnceAlarm = (params: {
 	specify_time: string;
 }) => axios.post('/once_alarm', params);
 
-export const cancelAlarm = (params: {
-	type: 'once' | 'daily';
-	job_id: string;
-}) => axios.delete('/once_alarm');
+export const cancelAlarm = (params: { type: 'once' | 'daily'; job_id: string }) =>
+	axios.post('/cancel_alarm', params);
 

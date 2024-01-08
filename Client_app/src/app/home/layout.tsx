@@ -3,7 +3,7 @@
 import { getStatusApi } from "@/common/api";
 import { Header } from "@/components/Header";
 import { useRouter } from "next/navigation";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import io from 'socket.io-client'
 let socket
@@ -35,7 +35,7 @@ const defaultStatus: StatusType = {
   once_alarm: []
 }
 
-export const StatusContext = createContext<any>({})
+export const StatusContext = createContext<any>(undefined)
 
 export default function RootLayout({
   children,
@@ -57,7 +57,8 @@ export default function RootLayout({
   }
   const router = useRouter()
 
-  const socketInitializer = async () => {
+  const socketInitializer = useCallback(() => {
+    async () => {
     socket = io(process.env.NEXT_PUBLIC_API_URL || '')
 
     socket.on('esp32_status', (data) => {
@@ -65,17 +66,18 @@ export default function RootLayout({
       if (res === false) {
         router.push('/home/disconnect')
       }
-    });
-
+    })
     socket.on('auto_mode', (data) => {
       getStatus()
     });
-  }
+
+    }
+  }, [router]);
 
   useEffect(() => {
     getStatus()
     socketInitializer()
-  }, [])
+  }, [socketInitializer])
   return (
     <main>
       <StatusContext.Provider value={{ status, setStatus, getStatus }}>

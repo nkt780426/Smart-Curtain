@@ -4,7 +4,7 @@ import Input from "@/components/base/Input";
 import { MinusIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import { useContext, useEffect, useState } from "react";
 import { StatusContext } from "../layout";
-import { postDailyAlarm, postOnceAlarm } from "@/common/api";
+import { cancelAlarm, postDailyAlarm, postOnceAlarm } from "@/common/api";
 import { toast } from "react-toastify";
 import TimePicker from "react-time-picker";
 import 'react-time-picker/dist/TimePicker.css';
@@ -51,11 +51,12 @@ const DailyAlarm = () => {
       percent: data.percent,
       specify_time: tmp
     }).then(res => {
+      setIsAdd(false)
       getStatus()
     })
       .catch(err => {
         console.log(err)
-        toast.error(err.response.data.msg || err.response.data.error || 'Try again')
+        toast.error('Try again')
       })
   }
   return <div className="container md:max-w-[80vw] m-auto px-5 mt-4">
@@ -99,7 +100,7 @@ const DailyAlarm = () => {
         <div className='flex gap-2 mt-3'>
           <PinkButton className='w-fit' onClick={handleSubmit(onSubmit)}>Add</PinkButton>
 
-          <button>
+          <button onClick={() => setIsAdd(false)}>
             <XMarkIcon
               className="text-pink-500 w-6 h-6 my-auto"
             />
@@ -113,7 +114,22 @@ const DailyAlarm = () => {
           new Date(e.specify_time).toTimeString()}</div>
         <div className="flex gap-10 my-1">
           <div>{e.percent}%</div>
-        <button>
+          <button
+            onClick={() => {
+              cancelAlarm({
+                type: 'daily',
+                job_id: e.job_id
+              })
+                .then(res => {
+                  setTimeout(() => getStatus(), 100)
+                  setIsAdd(false)
+                })
+                .catch(err => {
+                  console.log(err)
+                  toast.error(err.response.data.msg || err.response.data.error || 'Try again')
+                })
+            }}>
+
           <MinusIcon className="text-pink-500 w-6 h-6" />
         </button>
         </div>
