@@ -70,10 +70,10 @@ int numCircleS =0 ;
 int status = -1;
 int preStatus = -1;
 int percent = -1;
-int prePercent = 0;
+int prePercent = -2;
 String correlation_data, correlation_dataAlarm;
 String message;
-char buffer[64] = {};
+char buffer[250] = {};
 const float GAMMA = 0.7;
 const float RL10 = 50.0;
 int touchValue12;
@@ -93,8 +93,10 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
     Serial.println((char)payload[i]);
     message += (char)payload[i];
   }
-  if (topic == "auto_requests") auto_requests_state = 1;
-  if (topic == "alarm_requests") alarm_requests_state = 1;
+  
+  Serial.println(topic);
+  if (String(topic) == "auto_requests") auto_requests_state = 1;
+  if (String(topic) == "alarm_requests") alarm_requests_state = 1;
 }
 
 // Convert analog signal to Lux
@@ -104,6 +106,30 @@ float convertLux(int pin) {
   float resistance = 2000 * voltage / (1 - voltage / 5);
   float lux = pow(RL10 * 1e3 * pow(10, GAMMA) / resistance, (1 / GAMMA));
   return lux;
+}
+
+void reconnect() {
+  // Maintain connection to MQTT broker
+  if (!mqttClient.connected()) {
+    Serial.println("Reconnecting to MQTT broker...");
+    while (!mqttClient.connected()) {
+      if (mqttClient.connect("ProjectIOT", mqtt_username, mqtt_password)) {
+        Serial.println("Connected to MQTT broker!");
+        mqttClient.subscribe("alarm_requests");
+        mqttClient.subscribe("auto_requests");
+        JsonDocument doc6;
+        char buffer[150];
+        doc6["activate"] = true;
+        boolean i = true;
+        serializeJson(doc6, buffer);
+        mqttClient.publish("esp32_status", buffer);
+        Serial.println(i);
+      } else {
+        Serial.print("Failed to connect to MQTT broker, rc=");
+        Serial.print(mqttClient.state());
+      }
+    }
+  }
 }
 
 void setup() {
@@ -136,6 +162,12 @@ void setup() {
       Serial.println("Connected to MQTT broker!");
       mqttClient.subscribe("auto_requests");
       mqttClient.subscribe("alarm_requests");
+      JsonDocument doc6;
+      char buffer[150];
+      doc6["activate"] = true;
+      boolean i = true;
+      serializeJson(doc6, buffer);
+      mqttClient.publish("esp32_status", buffer);
     } else {
       Serial.print("Failed to connect to MQTT broker, rc=");
       Serial.print(mqttClient.state());
@@ -155,48 +187,20 @@ void loop() {
     wifiClient.setCACert(test_root_ca);
   }
 
-  // Maintain connection to MQTT broker
-  if (!mqttClient.connected()) {
-    Serial.println("Reconnecting to MQTT broker...");
-    while (!mqttClient.connected()) {
-      if (mqttClient.connect("ProjectIOT", mqtt_username, mqtt_password)) {
-        Serial.println("Connected to MQTT broker!");
-        mqttClient.subscribe("alarm_requests");
-        mqttClient.subscribe("auto_requests");
-        JsonDocument doc6;
-        char buffer[150];
-        doc6["activate"] = true;
-        boolean i = true;
-        serializeJson(doc6, buffer);
-        mqttClient.publish("esp32_status", buffer);
-        Serial.println(i);
-      } else {
-        Serial.print("Failed to connect to MQTT broker, rc=");
-        Serial.print(mqttClient.state());
-      }
-    }
-  }
+  reconnect();
   
   // Subscribe broker ///////////////////////////
   // // Arduino json 7.0 standard
     String temp;
     JsonDocument doc;
-    // if (mqttClient.subscribe("auto_requests")) auto_requests_state = 1;
-
     deserializeJson(doc, message);
-    // if (doc["status"].as<String>() == "True")  status = 1;
-    // else if (doc["status"].as<String>() == "False")   status = 0;
     if (doc["status"].as<boolean>() == true)  status = 1;
     else if (doc["status"].as<boolean>() == false)   status = 0;
-    // percent = (doc["percent"].as<String>()).toInt();
     percent = (doc["percent"].as<int>());
     correlation_data = doc["correlation_data"].as<String>();
-    // if(mqttClient.subscribe("alarm_requests")) alarm_requests_state = 1;
     deserializeJson(doc, message);
-    // percent = (doc["percent"].as<String>()).toInt();
     percent = (doc["percent"].as<int>());
     correlation_dataAlarm = doc["correlation_data"].as<String>();
-    Serial.println(percent);
     Serial.println(message);
   
   mqttClient.loop();
@@ -270,7 +274,9 @@ void loop() {
           }
           numCircleNow = numCircleC;
         }
-        
+        auto_requests_state == 1;
+        percent = ((float)numCircleNow)/numCircle * 100;
+        Serial.println("So phan tram la: " + String(percent));
         break;
       }
     case 0 : {  // Handle
@@ -300,39 +306,42 @@ void loop() {
       }
     }
   }
-  prePercent = percent;
 }
 indoor = convertLux(LDRAO1_PIN);
+if (digitalRead(LDRAO3_PIN) == HIGH) outdoor = "Dark";
+else outdoor = "Light";
 
 // Convert to Json and Publish
 
-  Serial.println(prePercent);
-  JsonDocument doc2;
-  doc2["indoor"] = String(indoor);
-  doc2["outdoor"] = String(outdoor);
-  doc2["ledState"] = "False";
-  doc2["percent"] = prePercent;
-  serializeJson(doc2, buffer);
-  mqttClient.publish("inform", buffer);
-
-  
+  if (count % 1000 == 0) {
+    JsonDocument doc2;
+    doc2["indoor"] = String(indoor);
+    doc2["outdoor"] = outdoor;
+    doc2["ledState"] = "False";
+    doc2["percent"] = prePercent;
+    serializeJson(doc2, buffer);
+    mqttClient.publish("inform", buffer);
+  }
   if(prePercent != percent && auto_requests_state == 1) {
+    reconnect();
     JsonDocument doc3;
     status == 1 ? doc3["status"] = true:doc3["status"] = false ;
-    doc3["correlation_data"] = correlation_data;
+    doc3["correlation_data"] = String(correlation_data);
     serializeJson(doc3, buffer);
     mqttClient.publish("auto_responses", buffer);
+    auto_requests_state == 0;
   }
 
   if (prePercent != percent && alarm_requests_state == 1) {
+    reconnect();
     JsonDocument doc4;
     doc4["status"] = true;
     doc4["auto_status"] = status;
-    doc4["correlation_data"] = correlation_dataAlarm;
+    doc4["correlation_data"] = String(correlation_dataAlarm);
     serializeJson(doc4, buffer);
     mqttClient.publish("alarm_responses", buffer);
+    alarm_requests_state == 0;
   }
-  
-
-delayMicroseconds(100);
+  prePercent = percent;
+  delayMicroseconds(100);
 }
