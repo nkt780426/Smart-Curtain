@@ -15,8 +15,8 @@
 
 
 // WiFi details
-const char* ssid = "TP-Link_09DE";
-const char* password = "tplink09de09detplink";
+const char* ssid = "Redmi";
+const char* password = "123456789";
 const char* test_root_ca =
   "-----BEGIN CERTIFICATE-----\n"
   "MIIFazCCA1OgAwIBAgIRAIIQz7DSQONZRGPgu2OCiwAwDQYJKoZIhvcNAQELBQAw\n"
@@ -58,13 +58,16 @@ const char* mqtt_password = "HoangDepTrai123";
 
 //
 boolean flag = 0;
+boolean auto_requests_state = 0;
+boolean alarm_requests_state = 0;
 int count = 0;
 int numCircle;
 int numCircleNow;
 int numCircle1 = 0;
 int numCircleS =0 ;
 int status = -1;
-int percent;
+int preStatus = -1;
+int percent = -1;
 int prePercent = 0;
 String correlation_data, correlation_dataAlarm;
 String message;
@@ -155,6 +158,11 @@ void loop() {
         Serial.println("Connected to MQTT broker!");
         mqttClient.subscribe("alarm_requests");
         mqttClient.subscribe("auto_requests");
+        JsonDocument doc6;
+        char buffer[150];
+        doc6["activate"] = true;
+        serializeJson(doc6, buffer);
+        mqttClient.publish("esp32_status", buffer);
       } else {
         Serial.print("Failed to connect to MQTT broker, rc=");
         Serial.print(mqttClient.state());
@@ -166,16 +174,20 @@ void loop() {
   // // Arduino json 7.0 standard
     String temp;
     JsonDocument doc;
-    mqttClient.subscribe("auto_requests");
+    if (mqttClient.subscribe("auto_requests")) auto_requests_state = 1;
 
     deserializeJson(doc, message);
-    if (doc["status"].as<String>() == "True")  status = 1;
-    else if (doc["status"].as<String>() == "False")   status = 0;
-    percent = (doc["percent"].as<String>()).toInt();
+    // if (doc["status"].as<String>() == "True")  status = 1;
+    // else if (doc["status"].as<String>() == "False")   status = 0;
+    if (doc["status"].as<boolean>() == true)  status = 1;
+    else if (doc["status"].as<boolean>() == false)   status = 0;
+    // percent = (doc["percent"].as<String>()).toInt();
+    percent = (doc["percent"].as<int>());
     correlation_data = doc["correlation_data"].as<String>();
-    mqttClient.subscribe("alarm_requests");
+    if(mqttClient.subscribe("alarm_requests")) alarm_requests_state = 1;
     deserializeJson(doc, message);
-    percent = (doc["percent"].as<String>()).toInt();
+    // percent = (doc["percent"].as<String>()).toInt();
+    percent = (doc["percent"].as<int>());
     correlation_dataAlarm = doc["correlation_data"].as<String>();
     Serial.println(message);
   
@@ -254,7 +266,7 @@ void loop() {
         break;
       }
     case 0 : {  // Handle
-      if (percent != prePercent && percent >= 0) {
+      if (percent != prePercent && percent > 0) {
         int numCircleH = ((percent) * numCircle) / 100;
         if (numCircleH > numCircleNow ) {
           for (int i = 0; i < abs(numCircleNow - numCircleH); i++) {
@@ -263,6 +275,7 @@ void loop() {
             delayMicroseconds(500);
             digitalWrite(DSTEP_PIN, LOW);
             delayMicroseconds(500);
+            Serial.println ("ERR1");
           }
         } else if (numCircleH < numCircleNow) {
           for (int i = 0; i < abs(numCircleH - numCircleNow); i++) {
@@ -271,6 +284,7 @@ void loop() {
             delayMicroseconds(500);
             digitalWrite(DSTEP_PIN, LOW);
             delayMicroseconds(500);
+            Serial.println ("ERR2");
           }
         }
         numCircleNow = numCircleH;
@@ -283,11 +297,8 @@ void loop() {
 indoor = convertLux(LDRAO1_PIN);
 
 // Convert to Json and Publish
-  JsonDocument doc6;
-  char buffer[150];
-  doc6["activate"] = "True";
-  serializeJson(doc6, buffer);
-  mqttClient.publish("esp32_status", buffer);
+
+
   JsonDocument doc2;
   doc2["indoor"] = String(indoor);
   doc2["outdoor"] = String(outdoor);
@@ -295,19 +306,25 @@ indoor = convertLux(LDRAO1_PIN);
   doc2["percent"] = String(prePercent);
   serializeJson(doc2, buffer);
   mqttClient.publish("inform", buffer);
-  JsonDocument doc3;
-  doc3["status"] = status;
-  doc3["correlation_data"] = correlation_data;
-  serializeJson(doc3, buffer);
-  mqttClient.publish("auto_responses", buffer);
-  JsonDocument doc4;
-  doc4["status"] = "True";
-  doc4["auto_status"] = status;
-  doc4["correlation_data"] = correlation_dataAlarm;
-  serializeJson(doc4, buffer);
-  mqttClient.publish("alarm_responses", buffer);
-  
 
+  
+  if(auto_requests_state == 1) {
+    JsonDocument doc3;
+    status == 1 ? doc3["status"] = true:doc3["status"] = false ;
+    doc3["correlation_data"] = correlation_data;
+    serializeJson(doc3, buffer);
+    mqttClient.publish("auto_responses", buffer);
+  }
+
+  if (alarm_requests_state == 1) {
+    JsonDocument doc4;
+    doc4["status"] = true;
+    doc4["auto_status"] = status;
+    doc4["correlation_data"] = correlation_dataAlarm;
+    serializeJson(doc4, buffer);
+    mqttClient.publish("alarm_responses", buffer);
+  }
+  
 
 delayMicroseconds(100);
 }
