@@ -15,8 +15,10 @@
 
 
 // WiFi details
-const char* ssid = "Redmi";
-const char* password = "123456789";
+// const char* ssid = "Redmi";
+// const char* password = "123456789";
+const char* ssid = "TP-Link_09DE";
+const char* password = "tplink09de09detplink";
 const char* test_root_ca =
   "-----BEGIN CERTIFICATE-----\n"
   "MIIFazCCA1OgAwIBAgIRAIIQz7DSQONZRGPgu2OCiwAwDQYJKoZIhvcNAQELBQAw\n"
@@ -78,6 +80,7 @@ int touchValue12;
 int touchValue15;
 String outdoor, indoor;
 
+
 // Initialize WiFi client and MQTT client
 WiFiClientSecure wifiClient;
 PubSubClient mqttClient(wifiClient);
@@ -90,6 +93,8 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
     Serial.println((char)payload[i]);
     message += (char)payload[i];
   }
+  if (topic == "auto_requests") auto_requests_state = 1;
+  if (topic == "alarm_requests") alarm_requests_state = 1;
 }
 
 // Convert analog signal to Lux
@@ -161,8 +166,10 @@ void loop() {
         JsonDocument doc6;
         char buffer[150];
         doc6["activate"] = true;
+        boolean i = true;
         serializeJson(doc6, buffer);
         mqttClient.publish("esp32_status", buffer);
+        Serial.println(i);
       } else {
         Serial.print("Failed to connect to MQTT broker, rc=");
         Serial.print(mqttClient.state());
@@ -174,7 +181,7 @@ void loop() {
   // // Arduino json 7.0 standard
     String temp;
     JsonDocument doc;
-    if (mqttClient.subscribe("auto_requests")) auto_requests_state = 1;
+    // if (mqttClient.subscribe("auto_requests")) auto_requests_state = 1;
 
     deserializeJson(doc, message);
     // if (doc["status"].as<String>() == "True")  status = 1;
@@ -184,11 +191,12 @@ void loop() {
     // percent = (doc["percent"].as<String>()).toInt();
     percent = (doc["percent"].as<int>());
     correlation_data = doc["correlation_data"].as<String>();
-    if(mqttClient.subscribe("alarm_requests")) alarm_requests_state = 1;
+    // if(mqttClient.subscribe("alarm_requests")) alarm_requests_state = 1;
     deserializeJson(doc, message);
     // percent = (doc["percent"].as<String>()).toInt();
     percent = (doc["percent"].as<int>());
     correlation_dataAlarm = doc["correlation_data"].as<String>();
+    Serial.println(percent);
     Serial.println(message);
   
   mqttClient.loop();
@@ -298,17 +306,17 @@ indoor = convertLux(LDRAO1_PIN);
 
 // Convert to Json and Publish
 
-
+  Serial.println(prePercent);
   JsonDocument doc2;
   doc2["indoor"] = String(indoor);
   doc2["outdoor"] = String(outdoor);
   doc2["ledState"] = "False";
-  doc2["percent"] = String(prePercent);
+  doc2["percent"] = prePercent;
   serializeJson(doc2, buffer);
   mqttClient.publish("inform", buffer);
 
   
-  if(auto_requests_state == 1) {
+  if(prePercent != percent && auto_requests_state == 1) {
     JsonDocument doc3;
     status == 1 ? doc3["status"] = true:doc3["status"] = false ;
     doc3["correlation_data"] = correlation_data;
@@ -316,7 +324,7 @@ indoor = convertLux(LDRAO1_PIN);
     mqttClient.publish("auto_responses", buffer);
   }
 
-  if (alarm_requests_state == 1) {
+  if (prePercent != percent && alarm_requests_state == 1) {
     JsonDocument doc4;
     doc4["status"] = true;
     doc4["auto_status"] = status;
