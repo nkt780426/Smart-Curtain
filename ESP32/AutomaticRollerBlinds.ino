@@ -63,6 +63,7 @@ boolean flag = 0;
 boolean auto_requests_state = 0;
 boolean alarm_requests_state = 0;
 int count = 0;
+int count2 = 0;
 int numCircle;
 int numCircleNow;
 int numCircle1 = 0;
@@ -201,7 +202,6 @@ void loop() {
     deserializeJson(doc, message);
     percent = (doc["percent"].as<int>());
     correlation_dataAlarm = doc["correlation_data"].as<String>();
-    Serial.println(message);
   
   mqttClient.loop();
   ///////////////////////////////////////
@@ -276,7 +276,6 @@ void loop() {
         }
         auto_requests_state == 1;
         percent = ((float)numCircleNow)/numCircle * 100;
-        Serial.println("So phan tram la: " + String(percent));
         break;
       }
     case 0 : {  // Handle
@@ -313,7 +312,7 @@ else outdoor = "Light";
 
 // Convert to Json and Publish
 
-  if (count % 1000 == 0) {
+  if (count2 % 10 == 0) {
     JsonDocument doc2;
     doc2["indoor"] = String(indoor);
     doc2["outdoor"] = outdoor;
@@ -321,7 +320,9 @@ else outdoor = "Light";
     doc2["percent"] = prePercent;
     serializeJson(doc2, buffer);
     mqttClient.publish("inform", buffer);
+    if (count2 == 100000) count2 = 0;
   }
+    
   if(prePercent != percent && auto_requests_state == 1) {
     reconnect();
     JsonDocument doc3;
@@ -343,5 +344,6 @@ else outdoor = "Light";
     alarm_requests_state == 0;
   }
   prePercent = percent;
-  delayMicroseconds(100);
+  count2 ++;
+delayMicroseconds(100);
 }
