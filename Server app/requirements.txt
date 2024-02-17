@@ -1,0 +1,10 @@
+flask
+flask-mqtt
+pymongo
+flask-jwt-extended
+flask-restx
+flask-socketio
+APScheduler
+python-decouple
+python-dateutil
+python-dotenv

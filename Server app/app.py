@@ -1,10 +1,7 @@
 from flask import Flask
-from flask_mqtt import Mqtt
-from flask_cors import CORS, cross_origin
 
 # Tạo các instance
 app = Flask(__name__)
-CORS(app)
 
 # Cấu hình log
 import logging
@@ -27,6 +24,7 @@ logger_api.setLevel(logging.INFO)  # Đặt mức độ log theo ý thích
 
 ###############################################################################################################################
 # Giao tiếp với broker
+from flask_mqtt import Mqtt
 from config.broker_config import BrokerConfig
 app.config.from_object(BrokerConfig)
 
@@ -36,7 +34,7 @@ mqtt = Mqtt(app)
 esp32_status = False
 auto_mode = False
 auto_responses = {}
-alarm_responses = {}
+handle_responses = {}
 
 @mqtt.on_connect()
 def handle_connect(client, userdata, flags, rc):
@@ -44,13 +42,12 @@ def handle_connect(client, userdata, flags, rc):
     mqtt.subscribe('esp32_status', qos=2)
     mqtt.subscribe('inform', qos=1)
     mqtt.subscribe('auto_responses', qos=2)
-    mqtt.subscribe('alarm_responses', qos=2)
+    mqtt.subscribe('handle_responses', qos=2)
 
     # In log nếu subcribe thành công
 @mqtt.on_subscribe()
 def handle_subscribe(client, userdata, mid, granted_qos):
     logger_broker.info('Subscription id {} granted with qos {}.'.format(mid, granted_qos))
-
 
     # Xử lý các messages, đọc các hàm xử lý ở dưới
 @mqtt.on_message()
@@ -60,15 +57,15 @@ def handle_message(client, userdata, message):
         handle_inform_messages(message)
     if message.topic == 'auto_responses':
         handle_auto_response_messages(message)
-    if message.topic == 'alarm_responses':
-        handle_alarm_response_messages(message)
+    if message.topic == 'handle_responses':
+        handle_handle_response_messages(message)
     if message.topic == 'esp32_status':
         handle_esp32_status_messages(message)
 
 import json
 from flask_socketio import SocketIO
 
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app)
 
 from pymongo import MongoClient
 from config.database_config import DatabaseConfig
@@ -112,15 +109,15 @@ def handle_auto_response_messages(message):
 
     try:
         auto_response = json.loads(payload)
-        global auto_mode
         correlation_data = auto_response['correlation_data']
+        global auto_mode
         global auto_responses
-        auto_mode = auto_responses[correlation_data] = auto_response['status']
+        auto_mode = auto_responses[correlation_data] = auto_response['auto_status']
         logger_broker.info(f'Response for request message has correlation_data: {correlation_data} -- {payload}')
     except Exception as e:
         logger_broker.error(f"Error processing Message_ID: {message.mid} -- Error: {e}")
 
-def handle_alarm_response_messages(message):
+def handle_handle_response_messages(message):
     topic = message.topic
     payload = message.payload.decode('utf-8')
     logger_broker.info(f"Received Message_ID: {message.mid} -- on topic {topic}: {payload}")
@@ -128,8 +125,10 @@ def handle_alarm_response_messages(message):
     try:
         alarm_response = json.loads(payload)
         correlation_data = alarm_response['correlation_data']
-        global alarm_responses
-        alarm_responses[correlation_data] = {'status': alarm_response['status'], 'auto_status': alarm_response['auto_status']}
+        global handle_responses
+        handle_responses[correlation_data] = {'auto_status': alarm_response['auto_status']}
+        global auto_mode
+        auto_mode = alarm_response['auto_status']
         logger_broker.info(f'Response for request message has correlation_data: {correlation_data} -- {payload}')
 
     except Exception as e:
@@ -166,7 +165,7 @@ jwt = JWTManager(app)
 
 
 from flask_restx import Api, Resource, fields
-api = Api(app, title='Bạn Hoàng rất đẹp trai!', version='1.0', description='API for controlling smart curtain')
+api = Api(app, title='API Document', version='1.0', description='API for controlling smart curtain')
 
 # Tạo model để validate dữ liệu trả về (Swagger)
 result_model = api.model('result',{
@@ -184,7 +183,8 @@ error_model = api.model('error',{
 
 account_model = api.model('account',{
     'username': fields.String(required=True),
-    'password': fields.String(required=True)
+    'password': fields.String(required=True),
+    'secret_curtain_code': fields.String(required=True)
 })
 
 # Check thông tin account trong db
@@ -318,7 +318,10 @@ scheduler.start()
 # Các api
     
 auto_model = api.model('auto',{
-    'status': fields.Boolean(required=True),
+    'auto_status': fields.Boolean(required=True),
+})
+
+handle_model = api.model('handle',{
     'percent': fields.Integer(required=True)
 })
 
@@ -400,7 +403,7 @@ import time
 @api.route('/auto')
 class AutoModeResource(Resource):
     @jwt_required(optional=True)
-    @api.doc('auto mode', params={'status': 'Turn on or off auto mode!', 'percent':'openess'})
+    @api.doc('auto mode', params={'auto_status': 'Turn on or off auto mode!'})
     @api.expect(auto_model)
     @api.response(201, 'Success', result_model)
     @api.response(401, 'User is not loggeg in', error_model)
@@ -416,8 +419,7 @@ class AutoModeResource(Resource):
             if esp32_status:
                 # Tạo gói tin gửi đi esp32
                 message = {}
-                message['status'] = data.get('status')
-                message['percent'] = data.get('percent')
+                message['auto_status'] = data.get('auto_status')
                 correlation_data = str(uuid.uuid4())
                 message['correlation_data'] = correlation_data
                 message_json = json.dumps(message)
@@ -459,9 +461,67 @@ def wait_for_auto_response(has_response, correlation_data):
     # Đánh thức
     has_response.set()
 
-# ---------------------  Alarm and handle curtain api -------------------------------------------
+@api.route('/handle')
+class HandleModeResource(Resource):
+    @jwt_required(optional=True)
+    @api.doc('handle mode', params={'percent':'openess'})
+    @api.expect(handle_model)
+    @api.response(201, 'Success', result_model)
+    @api.response(401, 'User is not loggeg in', error_model)
+    @api.response(501, 'Esp32 disconnect to broker', error_model)
+    def put(self):
+        ''''Adjust auto mode and handle curtain'''
+        current_user = get_jwt_identity()
+        if current_user:
+            data = request.get_json()
+            logger_api.info(f'Username: {current_user} -- PUT "/handle" with payload {data}')
+            global esp32_status
 
-once_job_ids = []
+            if esp32_status:
+                # Tạo gói tin gửi đi esp32
+                message = {}
+                message['percent'] = data.get('percent')
+                correlation_data = str(uuid.uuid4())
+                message['correlation_data'] = correlation_data
+                message_json = json.dumps(message)
+
+                global mqtt
+                mqtt.publish('handle_requests', message_json, qos = 2)
+                logger_broker.info(f'Send message has correlation data : {correlation_data} -- payload: {message_json}')
+
+                # Đợi esp32 phản hồi
+                has_response = Event()
+                wait_for_response_thread = Thread(target =wait_for_handle_response, args = (has_response, correlation_data))
+                wait_for_response_thread.start()
+
+                # ESP32 phản hồi thành công
+                has_response.wait()
+                # Reset the event for the next API request
+                has_response.clear()
+
+                global handle_responses
+                del handle_responses[correlation_data]
+                response = {'status': True}
+                logger_api.info(f'Username: {current_user} -- Response for PUT "/handle": 201 {response}')
+                return response, 201
+            
+            response = {'error': "Esp32 disconnect to broker!"}
+            logger_api.info(f'Username: {current_user} -- Response for PUT "/handle": 501 {response}')
+            return response, 501
+        else:
+            response = {"error": "User is not logged in"}
+            logger_api.info(f'Username: {current_user} -- Response for PUT "/handle": 401 {response}')
+            return response, 401
+
+# đợi response từ mqtt
+def wait_for_handle_response(has_response, correlation_data):
+    global handle_responses
+    while correlation_data not in handle_responses:
+        time.sleep(0.1)
+    # Đánh thức
+    has_response.set()
+
+# ---------------------  Alarm and handle curtain api -------------------------------------------
 
 # Mỗi khi đến giờ publish 1 message đến esp32
 def send_alarm_message_to_esp32(job_id, username, percent, type):
@@ -473,21 +533,22 @@ def send_alarm_message_to_esp32(job_id, username, percent, type):
     message_json = json.dumps(message)
 
     global mqtt
-    mqtt.publish('alarm_requests', message_json, qos = 2)
+    mqtt.publish('handle_requests', message_json, qos = 2)
     logger_broker.info(f'Send message has corrrelation data: {correlation_data} -- payload: {message_json}')
 
     # Đợi message từ esp32
     has_response = Event()
-    wait_for_response_thread = Thread(target =wait_for_alarm_response, args = (has_response, correlation_data))
+    # wat_for_handle_response là hàm ở trên
+    wait_for_response_thread = Thread(target =wait_for_handle_response, args = (has_response, correlation_data))
     wait_for_response_thread.start()
     has_response.wait()
     # Reset the event for the next API request
     has_response.clear()
 
     # Sau khi esp32 phản hồi
-    global alarm_responses
-    socketio.emit('auto_mode', json.dumps({'status': alarm_responses[correlation_data].get('auto_status')}))
-    del alarm_responses[correlation_data]
+    global handle_responses
+    socketio.emit('auto_mode', json.dumps({'status': handle_responses[correlation_data].get('auto_status')}))
+    del handle_responses[correlation_data]
     if type == "once":
         global once_alarm_collections
         query ={
@@ -495,14 +556,6 @@ def send_alarm_message_to_esp32(job_id, username, percent, type):
             "username": username
         }
         once_alarm_collections.delete_one(query)
-
-# đợi response từ broker
-def wait_for_alarm_response(has_response, correlation_data):
-    global alarm_responses
-    while correlation_data not in alarm_responses:
-        time.sleep(0.1)
-    # Đánh thức
-    has_response.set()
 
 # Tạo job với 2 kiểu alarm
 from apscheduler.triggers.cron import CronTrigger
@@ -696,4 +749,4 @@ class CancelAlarmResource(Resource):
 
 #  -----------------------------------------------------------------------
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
